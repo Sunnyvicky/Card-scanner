@@ -19,12 +19,10 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 載入 Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { background-color: #f8fafc; color: #1e293b; margin: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        /* 強制影片滿版且最上層 */
         video {
             position: absolute;
             top: 0;
@@ -33,9 +31,8 @@
             height: 100%;
             object-fit: cover;
             z-index: 10;
-            transform: scaleX(1); /* 確保後鏡頭不鏡像 */
+            transform: scaleX(1);
         }
-        /* 掃描線動畫 */
         @keyframes scan {
             0% { top: 0%; opacity: 0; }
             50% { opacity: 1; }
@@ -50,7 +47,6 @@
             box-shadow: 0 0 10px #3b82f6;
             animation: scan 2s linear infinite;
         }
-        /* 啟動畫面樣式 */
         .splash-screen {
             position: fixed;
             top: 0;
@@ -67,11 +63,9 @@
     </style>
 </head>
 <body>
-    <!-- 1. 預先顯示的啟動畫面 -->
     <div id="root">
         <div class="splash-screen">
             <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #3b82f6 0%, #0f172a 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.4);">
-                <!-- 名片 Logo -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 512 512" fill="none">
                     <rect x="96" y="156" width="320" height="200" rx="24" fill="white"/>
                     <rect x="96" y="190" width="320" height="16" fill="#f59e0b"/>
@@ -88,7 +82,6 @@
     <script type="text/babel">
         const { useState, useRef, useEffect, useMemo, Component } = React;
 
-        // --- IndexedDB 資料庫工具 ---
         const DB_NAME = 'SnapCardDB';
         const STORE_NAME = 'cards';
         const DB_VERSION = 1;
@@ -149,7 +142,6 @@
             }
         };
 
-        // --- 錯誤邊界 ---
         class ErrorBoundary extends Component {
             constructor(props) {
                 super(props);
@@ -172,10 +164,8 @@
             }
         }
 
-        // --- 安全的 Icon 元件 ---
         const Icon = ({ name, size = 20, className = "" }) => {
             const ref = useRef(null);
-
             useEffect(() => {
                 if (!ref.current || !window.lucide) return;
                 const container = ref.current;
@@ -186,18 +176,12 @@
                 window.lucide.createIcons({
                     root: container,
                     nameAttr: 'data-lucide',
-                    attrs: {
-                        width: size,
-                        height: size,
-                        class: className
-                    }
+                    attrs: { width: size, height: size, class: className }
                 });
             }, [name, size, className]);
-
             return <span ref={ref} style={{ display: 'inline-flex', alignItems: 'center' }}></span>;
         };
 
-        // --- 極致安全壓縮 (Object URL) ---
         const compressImage = (file) => {
             return new Promise((resolve, reject) => {
                 if (!file) return reject("無檔案");
@@ -210,7 +194,6 @@
                     const MAX_SIZE = 800; 
                     let width = img.width;
                     let height = img.height;
-
                     if (width > height) {
                         if (width > MAX_SIZE) {
                             height *= MAX_SIZE / width;
@@ -232,7 +215,6 @@
             });
         };
 
-        // --- 相機元件 (WYSIWYG 裁切版) ---
         const CameraScanner = ({ onCapture, onCancel }) => {
             const videoRef = useRef(null);
             const [error, setError] = useState(null);
@@ -303,7 +285,7 @@
                         {error && <div className="absolute inset-0 flex items-center justify-center text-white bg-black/80">{error}</div>}
                         
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                            <div className="w-3/4 aspect-[1.6/1] border-2 border-blue-500 rounded-xl relative shadow-[0_0_0_999px_rgba(0,0,0,0.5)] overflow-hidden">
+                            <div className="w-[85%] aspect-[1.6/1] border-2 border-blue-500 rounded-xl relative shadow-[0_0_0_999px_rgba(0,0,0,0.5)] overflow-hidden">
                                 <div className="scan-line"></div>
                                 <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-blue-500 -mt-1 -ml-1"></div>
                                 <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-blue-500 -mt-1 -mr-1"></div>
@@ -423,17 +405,15 @@
                 analyze(base64);
             };
 
-            // ✅ 改進版 AI 辨識函數
             const analyze = async (base64) => {
                 setIsProcessing(true);
                 setError(null);
                 
-                // 更完整的模型清單，包含免費和試用模型
                 const models = [
-                    "gemini-1.5-flash-latest",      // 最新的 Flash 版本
-                    "gemini-1.5-flash",              // 標準 Flash
-                    "gemini-1.5-flash-8b-latest",   // 最新輕量版
-                    "gemini-pro-vision",             // 舊版視覺模型（備援）
+                    "gemini-1.5-flash-latest",
+                    "gemini-1.5-flash",
+                    "gemini-1.5-flash-8b-latest",
+                    "gemini-pro-vision",
                 ];
 
                 const imageParts = [{
@@ -466,12 +446,11 @@
 
                 const tryModel = async (index) => {
                     if (index >= models.length) {
-                        // 所有模型都失敗，給使用者選擇
                         throw new Error("AI_FAIL");
                     }
                     
                     const model = models[index];
-                    setStatusMsg(`嘗試使用 ${model}...`);
+                    setStatusMsg(`嘗試模型 ${index + 1}/${models.length}...`);
                     
                     try {
                         console.log(`Trying model: ${model}`);
@@ -501,7 +480,6 @@
                         if (!res.ok) {
                             console.warn(`Model ${model} failed:`, responseText);
                             
-                            // 針對不同錯誤碼處理
                             if (res.status === 429) {
                                 setStatusMsg("配額已滿，嘗試其他模型...");
                                 await new Promise(r => setTimeout(r, 1000));
@@ -519,7 +497,6 @@
                         const json = JSON.parse(responseText);
                         console.log("API Response:", json);
                         
-                        // 檢查回應格式
                         if (!json.candidates || !json.candidates[0] || !json.candidates[0].content) {
                             throw new Error("Invalid response format");
                         }
@@ -529,7 +506,6 @@
                     } catch (e) {
                         console.error(`Model ${model} error:`, e);
                         
-                        // 如果是網路錯誤或解析錯誤，嘗試下一個模型
                         if (index < models.length - 1) {
                             await new Promise(r => setTimeout(r, 500));
                             return await tryModel(index + 1);
@@ -545,10 +521,8 @@
                     let text = json.candidates[0].content.parts[0].text;
                     console.log("Raw AI response:", text);
                     
-                    // 清理回應文字
                     text = text.replace(/```json|```/g, '').trim();
                     
-                    // 找出 JSON 部分
                     const start = text.indexOf('{');
                     const end = text.lastIndexOf('}');
                     
@@ -572,7 +546,6 @@
                     console.error("Analysis failed:", e);
                     
                     if (e.message === "AI_FAIL") {
-                        // AI 辨識失敗，詢問使用者是否要手動輸入
                         if (confirm("AI 辨識失敗，是否要手動輸入資料？")) {
                             setResultData({ category: "工作" });
                             setBackImage(null);
@@ -791,7 +764,6 @@
                                     </div>
                                 )}
                                 
-                                {/* 搜尋列 */}
                                 <div className="relative">
                                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                         <Icon name="search" size={16} />
@@ -948,7 +920,6 @@
                                     </div>
                                 </div>
 
-                                {/* 名片快照 */}
                                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                                     <p className="text-xs font-bold text-gray-400 mb-2 flex items-center gap-2">
                                         <Icon name="image" size={14} /> 名片快照
@@ -969,7 +940,6 @@
                                     </div>
                                 </div>
 
-                                {/* 附加照片 */}
                                 <div className="bg-white p-4 rounded-xl shadow-sm">
                                     <div className="flex justify-between items-center mb-2">
                                         <p className="text-xs font-bold text-gray-400">附加照片</p>
@@ -1012,7 +982,6 @@
 
                     {view === "home" && (
                         <div className="fixed bottom-6 left-0 w-full flex justify-center pointer-events-none z-20 gap-6 items-end">
-                            {/* 手動輸入按鈕 */}
                             <button 
                                 onClick={handleManualAdd}
                                 className="bg-gray-700 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-xl active:scale-90 transition-transform pointer-events-auto border-4 border-white hover:bg-gray-600 mb-1"
@@ -1020,7 +989,6 @@
                                 <Icon name="pencil" size={20} />
                             </button>
                             
-                            {/* 掃描按鈕 */}
                             <button 
                                 onClick={startScanFlow} 
                                 className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition-transform pointer-events-auto border-4 border-white hover:bg-blue-700"
@@ -1028,7 +996,6 @@
                                 <Icon name="camera" size={32} />
                             </button>
                             
-                            {/* 佔位，保持平衡 */}
                             <div className="w-12"></div>
                         </div>
                     )}
