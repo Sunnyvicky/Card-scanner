@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SnapCard AI - 專業人脈管家</title>
+    <title>Card Scanner - 專業人脈管家</title>
     
     <!-- PWA 設定 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SnapCard">
+    <meta name="apple-mobile-web-app-title" content="Card Scanner">
     <meta name="theme-color" content="#1e3a8a">
     
     <!-- App Icon: 深藍背景 + 白色名片 + 橘金色線條 -->
@@ -74,7 +74,7 @@
                     <rect x="230" y="270" width="80" height="12" rx="3" fill="#e2e8f0"/>
                 </svg>
             </div>
-            <h1 style="font-size: 20px; font-weight: 900; color: #1e293b; font-family: sans-serif; letter-spacing: -0.5px;">SNAPCARD AI</h1>
+            <h1 style="font-size: 20px; font-weight: 900; color: #1e293b; font-family: sans-serif; letter-spacing: -0.5px;">CARD SCANNER</h1>
             <p style="font-size: 14px; color: #64748b; font-family: sans-serif; margin-top: 8px; letter-spacing: 1px;">人脈，是最好的資產</p>
         </div>
     </div>
@@ -82,7 +82,7 @@
     <script type="text/babel">
         const { useState, useRef, useEffect, useMemo, Component } = React;
 
-        const DB_NAME = 'SnapCardDB';
+        const DB_NAME = 'CardScannerDB';
         const STORE_NAME = 'cards';
         const DB_VERSION = 1;
 
@@ -320,7 +320,7 @@
             const [resultData, setResultData] = useState({});
             const [currentCardId, setCurrentCardId] = useState(null);
             const [filterCategory, setFilterCategory] = useState("全部");
-            const [apiKey, setApiKey] = useState(() => localStorage.getItem("snapcard_api_key") || "");
+            const [apiKey, setApiKey] = useState(() => localStorage.getItem("cardscanner_api_key") || "");
             const [tempKey, setTempKey] = useState("");
             const [error, setError] = useState(null);
             const [statusMsg, setStatusMsg] = useState("AI 辨識中...");
@@ -343,8 +343,8 @@
                         setIsLoadingDB(true);
                         const dbCards = await dbUtils.getAll();
                         
-                        const hasMigrated = localStorage.getItem("snapcard_migrated");
-                        const localCardsStr = localStorage.getItem("snapcard_cards");
+                        const hasMigrated = localStorage.getItem("cardscanner_migrated");
+                        const localCardsStr = localStorage.getItem("cardscanner_cards");
 
                         if (localCardsStr && !hasMigrated) {
                             try {
@@ -356,7 +356,7 @@
                                             dbCards.push(card);
                                         }
                                     }
-                                    localStorage.setItem("snapcard_migrated", "true");
+                                    localStorage.setItem("cardscanner_migrated", "true");
                                 }
                             } catch (e) {
                                 console.error("Migration error", e);
@@ -663,7 +663,7 @@
                 const blob = new Blob([dataStr], { type: "application/octet-stream" });
                 const url = URL.createObjectURL(blob);
                 
-                const exportFileDefaultName = `snapcard_backup_${new Date().toISOString().slice(0,10)}.json`;
+                const exportFileDefaultName = `cardscanner_backup_${new Date().toISOString().slice(0,10)}.json`;
                 
                 const linkElement = document.createElement('a');
                 linkElement.style.display = "none";
@@ -713,7 +713,7 @@
                     try {
                         await dbUtils.clear();
                         setCards([]);
-                        localStorage.removeItem("snapcard_cards"); 
+                        localStorage.removeItem("cardscanner_cards"); 
                         alert("資料已清空");
                     } catch (e) {
                         alert("清除失敗");
@@ -733,7 +733,7 @@
                                 <path d="M64 256h384" stroke="#f59e0b" strokeWidth="32" strokeLinecap="round"/>
                             </svg>
                         </div>
-                        <h1 style={{ fontSize: '20px', fontWeight: '900', color: '#1e293b', fontFamily: 'sans-serif', letterSpacing: '-0.5px' }}>SNAPCARD AI</h1>
+                        <h1 style={{ fontSize: '20px', fontWeight: '900', color: '#1e293b', fontFamily: 'sans-serif', letterSpacing: '-0.5px' }}>CARD SCANNER AI</h1>
                         <p style={{ fontSize: '14px', color: '#64748b', fontFamily: 'sans-serif', marginTop: '8px', letterSpacing: '1px' }}>人脈，是最好的資產</p>
                     </div>
                 );
@@ -742,7 +742,7 @@
             return (
                 <div className="max-w-md mx-auto h-screen bg-gray-50 flex flex-col font-sans overflow-hidden border-x border-gray-200">
                     <header className="px-6 pt-12 pb-4 bg-white shadow-sm flex justify-between items-center z-10">
-                        <h1 className="text-xl font-black text-blue-600 tracking-tighter">SNAPCARD</h1>
+                        <h1 className="text-xl font-black text-blue-600 tracking-tighter">CARD SCANNER</h1>
                         <button onClick={() => setView("settings")} className="text-gray-400">
                             <Icon name="settings" />
                         </button>
@@ -829,7 +829,7 @@
                                     onChange={e => setTempKey(e.target.value)} 
                                 />
                                 <button onClick={() => { 
-                                    localStorage.setItem("snapcard_api_key", tempKey); 
+                                    localStorage.setItem("cardscanner_api_key", tempKey); 
                                     setApiKey(tempKey); 
                                     setTempKey("");
                                     setView("home"); 
