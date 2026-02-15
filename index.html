@@ -11,10 +11,10 @@
     <meta name="apple-mobile-web-app-title" content="SnapCard">
     <meta name="theme-color" content="#ffffff">
     
-    <!-- App Icon: 修正解決 iOS 壓字 "S" 問題版本 (白底 + 藍名片 + 置中橘圓 + 文字) -->
-    <!-- 採用 180x180 標準規格，強制純色填滿，不使用 Base64 以避免解析錯誤 -->
-    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23ffffff'/%3E%3Crect x='35' y='45' width='110' height='75' rx='8' fill='%231e3a8a'/%3E%3Ccircle cx='90' cy='82' r='15' fill='%23f59e0b'/%3E%3Ctext x='90' y='160' font-family='sans-serif' font-weight='900' font-size='22' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Crect x='6' y='8' width='20' height='14' rx='2' fill='%231e3a8a'/%3E%3Ccircle cx='16' cy='15' r='3' fill='%23f59e0b'/%3E%3C/svg%3E">
+    <!-- App Icon: 採用初期開發成功的 precomposed 模式，強制取消 iOS 系統自動壓字功能 -->
+    <!-- 設定 180x180 完美尺寸，並使用 URL 安全編碼確保 Safari 100% 讀取圖像 -->
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20180%20180%22%3E%3Crect%20width%3D%22180%22%20height%3D%22180%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%2230%22%20y%3D%2240%22%20width%3D%22120%22%20height%3D%2280%22%20rx%3D%2210%22%20fill%3D%22%231e3a8a%22%2F%3E%3Ccircle%20cx%3D%2290%22%20cy%3D%2280%22%20r%3D%2218%22%20fill%3D%22%23f59e0b%22%2F%3E%3Ctext%20x%3D%2290%22%20y%3D%22155%22%20font-family%3D%22sans-serif%22%20font-weight%3D%22900%22%20font-size%3D%2224%22%20fill%3D%22%231e3a8a%22%20text-anchor%3D%22middle%22%3ESnapCard%3C%2Ftext%3E%3C%2Fsvg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20180%20180%22%3E%3Crect%20width%3D%22180%22%20height%3D%22180%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%2230%22%20y%3D%2240%22%20width%3D%22120%22%20height%3D%2280%22%20rx%3D%2210%22%20fill%3D%22%231e3a8a%22%2F%3E%3Ccircle%20cx%3D%2290%22%20cy%3D%2280%22%20r%3D%2218%22%20fill%3D%22%23f59e0b%22%2F%3E%3C%2Fsvg%3E">
 
     <!-- Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -77,7 +77,7 @@
 </head>
 <body>
     <div id="root">
-        <!-- 預設靜態啟動畫面 (HTML) - 含橘色動態掃描線 -->
+        <!-- 預設靜態啟動畫面 (HTML) - 含橘色動態掃描線 (保持不變) -->
         <div class="splash-screen">
             <div style="width: 120px; height: 120px; margin-bottom: 24px;">
                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
@@ -388,7 +388,7 @@
             const dropdownModels = [...new Set([...baseModels, ...availableModels])].filter(m => !m.includes("1.5"));
 
             if (showSplash) {
-                // React Splash Screen (保持與 HTML 同步：深藍底 + 白名片 + 橘線動畫)
+                // React Splash Screen (保持同步樣式)
                 return (
                     <div className="fixed inset-0 bg-[#1e3a8a] z-[9999] flex flex-col items-center justify-center" style={{background: 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)'}}>
                         <div style={{ width: '120px', height: '120px', marginBottom: '24px' }}>
@@ -397,7 +397,6 @@
                                 <circle cx="160" cy="256" r="35" fill="#e2e8f0"/>
                                 <rect x="230" y="240" width="140" height="16" rx="4" fill="#94a3b8"/>
                                 <rect x="230" y="270" width="100" height="12" rx="3" fill="#cbd5e1"/>
-                                {/* 動態掃描線動畫 */}
                                 <rect x="86" y="156" width="340" height="16" fill="#f97316" opacity="0.8">
                                     <animate attributeName="y" values="156;340;156" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" />
                                 </rect>
@@ -480,7 +479,7 @@
                                         <label className="w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"><span>匯入</span><Icon name="download" size={18}/><input type="file" accept=".json" onChange={importData} className="hidden"/></label>
                                     </div>
                                 </div>
-                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 38.1 (Legacy Encoding Fixed)</div>
+                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 38.3 (No Overlay Precomposed Fix)</div>
                                 <button onClick={()=>setView("home")} className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold mt-4">返回</button>
                             </div>
                         )}
@@ -553,7 +552,6 @@
                             <div className="flex items-center gap-8 bg-white/90 backdrop-blur-md px-8 py-3 rounded-full shadow-2xl pointer-events-auto border border-gray-100/50">
                                 <button onClick={startScanFlow} className="relative -top-8 group flex flex-col items-center">
                                     <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-full flex items-center justify-center shadow-[0_8px_20px_rgb(37,99,235,0.4)] border-4 border-white group-active:scale-95 transition-all">
-                                        {/* [修正] 掃描按鈕改回經典 scan-line 圖示 */}
                                         <Icon name="scan-line" size={32} className="text-white"/>
                                     </div>
                                     <span className="text-[10px] font-bold text-blue-700 mt-1 absolute -bottom-5">掃描名片</span>
@@ -571,7 +569,6 @@
             );
         }
         
-        // 確保 ErrorBoundary 正確拼寫
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(
             <ErrorBoundary>
