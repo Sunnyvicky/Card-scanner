@@ -11,9 +11,10 @@
     <meta name="apple-mobile-web-app-title" content="SnapCard">
     <meta name="theme-color" content="#ffffff">
     
-    <!-- App Icon: 採用初期成功的 Base64 編碼技術，確保 iOS 桌面圖示顯示正常 (白底 + 藍名片 + 置中橘圓 + 文字) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iI2ZmZmZmZiIvPjxyZWN0IHg9Ijk2IiB5PSIxMjYiIHdpZHRoPSIzMjAiIGhlaWdodD0iMjIwIiByeD0iMjQiIGZpbGw9IiMxZTNhOGEiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMzYiIHI9IjQ1IiBmaWxsPSIjZjU5ZTBiIi8+PHRleHQgeD0iMjU2IiB5PSI0NjAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjY0IiBmaWxsPSIjMWUzYThhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TbmFwQ2FyZDwvdGV4dD48L3N2Zz4=">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iI2ZmZmZmZiIvPjxyZWN0IHg9Ijk2IiB5PSIxMjYiIHdpZHRoPSIzMjAiIGhlaWdodD0iMjIwIiByeD0iMjQiIGZpbGw9IiMxZTNhOGEiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMzYiIHI9IjQ1IiBmaWxsPSIjZjU5ZTBiIi8+PHRleHQgeD0iMjU2IiB5PSI0NjAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjY0IiBmaWxsPSIjMWUzYThhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TbmFwQ2FyZDwvdGV4dD48L3N2Zz4=">
+    <!-- App Icon: 修正解決 iOS 壓字 "S" 問題版本 (白底 + 藍名片 + 置中橘圓 + 文字) -->
+    <!-- 採用 180x180 標準規格，強制純色填滿，不使用 Base64 以避免解析錯誤 -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23ffffff'/%3E%3Crect x='35' y='45' width='110' height='75' rx='8' fill='%231e3a8a'/%3E%3Ccircle cx='90' cy='82' r='15' fill='%23f59e0b'/%3E%3Ctext x='90' y='160' font-family='sans-serif' font-weight='900' font-size='22' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Crect x='6' y='8' width='20' height='14' rx='2' fill='%231e3a8a'/%3E%3Ccircle cx='16' cy='15' r='3' fill='%23f59e0b'/%3E%3C/svg%3E">
 
     <!-- Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
