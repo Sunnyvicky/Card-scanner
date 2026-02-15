@@ -11,9 +11,10 @@
     <meta name="apple-mobile-web-app-title" content="SnapCard">
     <meta name="theme-color" content="#ffffff">
     
-    <!-- App Icon: 使用簡化版 SVG 編碼，確保 iOS 桌面圖示顯示正常 (白底 + 藍名片 + 置中橘圓 + 文字) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='220' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a'/%3E%3Ccircle cx='256' cy='220' r='40' fill='%23f59e0b'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='220' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a'/%3E%3Ccircle cx='256' cy='220' r='40' fill='%23f59e0b'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
+    <!-- App Icon: 桌面圖示 (白底 + 藍名片 + 置中橘圓 + 文字) -->
+    <!-- 採用初期開發成功的極簡 SVG 技術，提高 iOS Safari 讀取成功率 -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a'/%3E%3Ccircle cx='256' cy='236' r='45' fill='%23f59e0b'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a'/%3E%3Ccircle cx='256' cy='236' r='45' fill='%23f59e0b'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
 
     <!-- Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -85,7 +86,7 @@
                     <rect x="230" y="240" width="140" height="16" rx="4" fill="#94a3b8"/>
                     <rect x="230" y="270" width="100" height="12" rx="3" fill="#cbd5e1"/>
                     
-                    <!-- 啟動畫面橘色掃描線上下移動動畫 -->
+                    <!-- 啟動畫面橘色掃描線動畫 -->
                     <rect x="86" y="156" width="340" height="16" fill="#f97316" opacity="0.8">
                         <animate attributeName="y" values="156;340;156" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" />
                     </rect>
@@ -182,7 +183,7 @@
                 if (videoRatio > displayRatio) {
                     sWidth = v.videoHeight * displayRatio; sx = (v.videoWidth - sWidth) / 2;
                 } else {
-                    sHeight = v.videoWidth / displayRatio; sy = (v.videoHeight - sHeight) / 2;
+                    sHeight = v.videoHeight * displayRatio; sy = (v.videoHeight - sHeight) / 2;
                 }
                 const frameW = sWidth * 0.75, frameH = frameW / 1.6;
                 const frameX = sx + (sWidth - frameW) / 2, frameY = sy + (sHeight - frameH) / 2;
@@ -274,38 +275,19 @@
                 for (let i = 0; i <= delays.length; i++) {
                     try {
                         const res = await fetch(url, options);
-                        if (res.status === 429) {
-                            return res; 
-                        }
-                        if (!res.ok && res.status >= 500 && i < delays.length) {
-                            await new Promise(resolve => setTimeout(resolve, delays[i]));
-                            continue;
-                        }
+                        if (res.status === 429) return res; 
+                        if (!res.ok && res.status >= 500 && i < delays.length) { await new Promise(resolve => setTimeout(resolve, delays[i])); continue; }
                         return res; 
-                    } catch (err) {
-                        if (i === delays.length) throw err;
-                        await new Promise(resolve => setTimeout(resolve, delays[i]));
-                    }
+                    } catch (err) { if (i === delays.length) throw err; await new Promise(resolve => setTimeout(resolve, delays[i])); }
                 }
             };
 
             const getUsableModels = async (cleanKey) => {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`;
                 const res = await fetchWithRetry(url, { method: 'GET' });
-                
-                if (!res.ok) {
-                    const err = await res.json().catch(()=>({}));
-                    throw new Error(`[${res.status}] ${err.error?.message || res.statusText}`);
-                }
-                
+                if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(`[${res.status}] ${err.error?.message || res.statusText}`); }
                 const data = await res.json();
-                if (!data.models) throw new Error("API 回傳格式異常");
-
-                const usable = data.models
-                    .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
-                    .filter(m => m.name.includes("gemini") && !m.name.includes("1.5")) 
-                    .map(m => m.name.replace("models/", ""));
-                
+                const usable = data.models.filter(m => m.supportedGenerationMethods?.includes("generateContent") && m.name.includes("gemini") && !m.name.includes("1.5")).map(m => m.name.replace("models/", ""));
                 if (usable.length === 0) throw new Error("此 Key 無法存取 Gemini 2.0/3.0 模型");
                 return usable;
             };
@@ -313,67 +295,36 @@
             const fetchModelsAndTest = async () => {
                 if(!apiKey) return setTestMessage("請輸入 Key");
                 setTestStatus("testing"); setTestMessage("正在查詢您的授權模型...");
-                
                 try {
                     const cleanKey = sanitizeKey(apiKey);
                     const usableModels = await getUsableModels(cleanKey);
                     setAvailableModels(usableModels);
-                    
-                    let bestModel = usableModels.find(m => m.includes("gemini-3.0")) ||
-                                    usableModels.find(m => m.includes("gemini-2.0")) || 
-                                    usableModels[0];
-                    
+                    let bestModel = usableModels.find(m => m.includes("gemini-3.0")) || usableModels.find(m => m.includes("gemini-2.0")) || usableModels[0];
                     setSelectedModel(bestModel);
-                    setTestStatus("success"); 
-                    setTestMessage(`驗證成功！已自動偵測最新模型：${bestModel}`);
-                    
-                } catch(e) { 
-                    setTestStatus("error"); 
-                    setTestMessage(`失敗: ${e.message}`); 
-                }
+                    setTestStatus("success"); setTestMessage(`驗證成功！已自動偵測最新模型：${bestModel}`);
+                } catch(e) { setTestStatus("error"); setTestMessage(`失敗: ${e.message}`); }
             };
 
             const analyze = async (base64) => {
                 setIsProcessing(true); setError(null);
-                
-                if (!apiKey) {
-                    setError("請先設定 API Key"); setView("settings"); setIsProcessing(false); return;
-                }
-
+                if (!apiKey) { setError("請先設定 API Key"); setView("settings"); setIsProcessing(false); return; }
                 const cleanKey = sanitizeKey(apiKey);
                 let actualModels = availableModels;
-
                 try {
                     if (actualModels.length === 0) {
                         setStatusMsg("正在向 Google 確認授權模型...");
                         actualModels = await getUsableModels(cleanKey);
                         setAvailableModels(actualModels);
-                        
-                        let bestModel = actualModels.find(m => m.includes("gemini-3.0")) ||
-                                        actualModels.find(m => m.includes("gemini-2.0")) || 
-                                        actualModels[0];
+                        let bestModel = actualModels.find(m => m.includes("gemini-3.0")) || actualModels.find(m => m.includes("gemini-2.0")) || actualModels[0];
                         setSelectedModel(bestModel);
                     }
-
                     let modelsToTry = [];
                     const target = selectedModel || actualModels.find(m => m.includes("gemini-3.0")) || actualModels.find(m => m.includes("gemini-2.0")) || actualModels[0];
-                    
-                    if (target && actualModels.includes(target)) {
-                        modelsToTry.push(target);
-                    }
-                    
-                    const sortedModels = [...actualModels].sort((a, b) => {
-                        const scoreA = a.includes("3.0") ? 3 : (a.includes("2.0") ? 2 : 0);
-                        const scoreB = b.includes("3.0") ? 3 : (b.includes("2.0") ? 2 : 0);
-                        return scoreB - scoreA;
-                    });
-                    
-                    for (const m of sortedModels) {
-                        if (!modelsToTry.includes(m)) modelsToTry.push(m);
-                    }
+                    if (target && actualModels.includes(target)) modelsToTry.push(target);
+                    const sorted = [...actualModels].sort((a,b)=>(b.includes("3.0")?3:b.includes("2.0")?2:0)-(a.includes("3.0")?3:a.includes("2.0")?2:0));
+                    sorted.forEach(m=>{if(!modelsToTry.includes(m))modelsToTry.push(m)});
 
-                    let lastError = "";
-                    let successJson = null;
+                    let lastError = "", successJson = null;
                     const prompt = `分析名片回傳JSON:{"name":"","jobTitle":"","company":"","mobile":"","tel":"","fax":"","email":"","address":"","category":"工作-客戶","note":""}。規則:1.分mobile/tel/fax 2.company合併中英 3.category[工作-客戶,工作-廠商,家人,朋友]。無Markdown。`;
                     const imagePart = { inlineData: { mimeType: "image/jpeg", data: base64.split(',')[1] } };
 
@@ -381,147 +332,63 @@
                         setStatusMsg(`AI 辨識中 (${model})...`);
                         try {
                             const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
-                            
-                            const res = await fetchWithRetry(url, {
-                                method: "POST", 
-                                headers: { "Content-Type": "application/json" },
-                                referrerPolicy: "no-referrer",
-                                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, imagePart] }] })
-                            });
-
+                            const res = await fetchWithRetry(url, { method: "POST", headers: { "Content-Type": "application/json" }, referrerPolicy: "no-referrer", body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, imagePart] }] }) });
                             if (!res.ok) {
                                 const err = await res.json().catch(()=>({}));
-                                const errMsg = err.error?.message || res.statusText;
-                                
-                                if (res.status === 400 && (errMsg.includes("API key") || errMsg.includes("INVALID_ARGUMENT"))) {
-                                    throw new Error("API Key 無效，請檢查設定");
-                                }
-                                
-                                console.warn(`[${model}] 失敗 (${res.status})，瞬間跳過...`);
-                                lastError = `[${res.status}] ${errMsg}`;
-                                continue; 
+                                const msg = err.error?.message || res.statusText;
+                                if (res.status === 400 && (msg.includes("API key") || msg.includes("INVALID_ARGUMENT"))) throw new Error("API Key 無效");
+                                console.warn(`[${model}] 失敗 (${res.status})，瞬間跳過...`); lastError = `[${res.status}] ${msg}`; continue; 
                             }
-
                             const json = await res.json();
                             let text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-                            if(!text) {
-                                lastError = "模型回傳空白內容";
-                                continue;
-                            }
-                            
+                            if(!text) { lastError = "模型回傳空白內容"; continue; }
                             text = text.replace(/```json|```/g, '').trim();
                             const start = text.indexOf('{'), end = text.lastIndexOf('}');
-                            if (start === -1 || end === -1) {
-                                lastError = "JSON 格式解析錯誤";
-                                continue;
-                            }
-                            
                             successJson = JSON.parse(text.substring(start, end + 1));
                             break; 
-
-                        } catch(e) {
-                            if (e.message.includes("API Key")) throw e;
-                            lastError = e.message;
-                        }
+                        } catch(e) { if (e.message.includes("API Key")) throw e; lastError = e.message; }
                     }
-
-                    if (!successJson) {
-                        throw new Error(`所有模型皆忙碌或達到額度上限 (${lastError})。請稍等一分鐘後再試。`);
-                    }
-                    
-                    setResultData(successJson || { category: "工作-客戶" });
-                    setBackImage(null); setAdditionalImage(null); setCurrentAvatar(null); setCurrentCardId(null);
-                    setView("result");
-
-                } catch(e) {
-                    setError(`辨識失敗: ${e.message}`);
-                    setView("home");
-                } finally {
-                    setIsProcessing(false);
-                }
+                    if (!successJson) throw new Error(`連線失敗 (${lastError})`);
+                    setResultData(successJson || { category: "工作-客戶" }); setBackImage(null); setAdditionalImage(null); setCurrentAvatar(null); setCurrentCardId(null); setView("result");
+                } catch(e) { setError(`辨識失敗: ${e.message}`); setView("home"); } finally { setIsProcessing(false); }
             };
 
             const saveCard = async () => {
                 const newData = { id: currentCardId || Date.now(), ...resultData, image: capturedImage, backImage: backImage, avatar: currentAvatar, additionalImage: additionalImage, category: resultData.category||"工作-客戶" };
                 await dbUtils.put(newData);
-                const d = await dbUtils.getAll(); 
-                setCards(sortCardsList(d));
-                setView("home");
+                const d = await dbUtils.getAll(); setCards(sortCardsList(d)); setView("home");
             };
-            
-            const handleDeleteCard = async (id, e) => {
-                e.stopPropagation(); if(confirm("刪除?")) { await dbUtils.delete(id); setCards(prev => prev.filter(c => c.id !== id)); }
-            };
-            
+            const handleDeleteCard = async (id, e) => { e.stopPropagation(); if(confirm("刪除?")) { await dbUtils.delete(id); setCards(prev => prev.filter(c => c.id !== id)); } };
             const sortCardsList = (cardsArray) => {
                 return [...cardsArray].sort((a, b) => {
-                    const compA = (a.company || "").toString().toLowerCase();
-                    const compB = (b.company || "").toString().toLowerCase();
-                    if (compA < compB) return -1;
-                    if (compA > compB) return 1;
-                    
-                    const nameA = (a.name || "").toString().toLowerCase();
-                    const nameB = (b.name || "").toString().toLowerCase();
-                    if (nameA < nameB) return -1;
-                    if (nameA > nameB) return 1;
-                    
+                    const compA = (a.company || "").toString().toLowerCase(); const compB = (b.company || "").toString().toLowerCase();
+                    if (compA < compB) return -1; if (compA > compB) return 1;
+                    const nameA = (a.name || "").toString().toLowerCase(); const nameB = (b.name || "").toString().toLowerCase();
+                    if (nameA < nameB) return -1; if (nameA > nameB) return 1;
                     return b.id - a.id;
                 });
             };
-
             const downloadSingleVcf = () => {
                 const card = resultData;
                 let vcf = "BEGIN:VCARD\nVERSION:3.0\n";
                 let displayName = card.name || "未命名";
                 if (card.company) displayName = `${card.company} ${displayName}`;
-                
-                vcf += `FN:${displayName}\n`;
-                vcf += `N:${displayName};;;;\n`;
-                
-                if (card.company) vcf += `ORG:${card.company};\n`;
-                if (card.jobTitle) vcf += `TITLE:${card.jobTitle}\n`;
-                if (card.mobile) vcf += `TEL;type=CELL:${card.mobile}\n`;
-                if (card.tel) vcf += `TEL;type=WORK:${card.tel}\n`;
-                if (card.fax) vcf += `TEL;type=FAX:${card.fax}\n`;
-                if (card.email) vcf += `EMAIL;type=INTERNET;type=WORK:${card.email}\n`;
-                if (card.address) vcf += `ADR;type=WORK:;;${card.address};;;;\n`;
-                
-                let notes = [];
-                if (card.category) notes.push(`分類: ${card.category}`);
-                if (card.note) notes.push(card.note);
-                if (notes.length > 0) vcf += `NOTE:${notes.join(' | ')}\n`;
-                
+                vcf += `FN:${displayName}\nN:${displayName};;;;\n`;
+                if (card.company) vcf += `ORG:${card.company};\n`; if (card.jobTitle) vcf += `TITLE:${card.jobTitle}\n`;
+                if (card.mobile) vcf += `TEL;type=CELL:${card.mobile}\n`; if (card.tel) vcf += `TEL;type=WORK:${card.tel}\n`; if (card.fax) vcf += `TEL;type=FAX:${card.fax}\n`;
+                if (card.email) vcf += `EMAIL;type=INTERNET;type=WORK:${card.email}\n`; if (card.address) vcf += `ADR;type=WORK:;;${card.address};;;;\n`;
+                let notes = []; if (card.category) notes.push(`分類: ${card.category}`); if (card.note) notes.push(card.note); if (notes.length > 0) vcf += `NOTE:${notes.join(' | ')}\n`;
                 vcf += "END:VCARD\n";
-                
-                const blob = new Blob([vcf], { type: 'text/vcard' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.download = `${displayName}.vcf`;
-                a.href = url;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                const blob = new Blob([vcf], { type: 'text/vcard' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.download = `${displayName}.vcf`; a.href = url; document.body.appendChild(a); a.click(); document.body.removeChild(a);
             };
-
-            const exportData = () => {
-                const blob = new Blob([JSON.stringify(cards,null,2)], {type:"application/json"});
-                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "snapcard_backup.json"; a.click();
-            };
-            const importData = (e) => {
-                const file = e.target.files[0]; if(!file)return;
-                const r = new FileReader(); r.onload=async(ev)=>{
-                    try { const d = JSON.parse(ev.target.result); for(const c of d) await dbUtils.put(c); 
-                    const all = await dbUtils.getAll(); 
-                    setCards(sortCardsList(all)); 
-                    alert("匯入成功"); } catch{alert("格式錯誤");}
-                }; r.readAsText(file); e.target.value='';
-            };
+            const exportData = () => { const blob = new Blob([JSON.stringify(cards,null,2)], {type:"application/json"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "snapcard_backup.json"; a.click(); };
+            const importData = (e) => { const file = e.target.files[0]; if(!file)return; const r = new FileReader(); r.onload=async(ev)=>{ try { const d = JSON.parse(ev.target.result); for(const c of d) await dbUtils.put(c); const all = await dbUtils.getAll(); setCards(sortCardsList(all)); alert("匯入成功"); } catch{alert("格式錯誤");} }; r.readAsText(file); e.target.value=''; };
 
             const baseModels = ["gemini-3.0-flash", "gemini-3.0-pro", "gemini-2.0-flash", "gemini-2.0-flash-exp"];
             const dropdownModels = [...new Set([...baseModels, ...availableModels])].filter(m => !m.includes("1.5"));
 
             if (showSplash) {
-                // [同步修正] React 渲染的啟動畫面也必須是 深藍底 + 白名片 + 橘線動畫
+                // React Splash Screen (保持與 HTML 同步：深藍底 + 白名片 + 橘線動畫)
                 return (
                     <div className="fixed inset-0 bg-[#1e3a8a] z-[9999] flex flex-col items-center justify-center" style={{background: 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)'}}>
                         <div style={{ width: '120px', height: '120px', marginBottom: '24px' }}>
@@ -536,7 +403,7 @@
                                 </rect>
                             </svg>
                         </div>
-                        <h1 style={{fontSize: '32px', fontWeight: '900', color: 'white', fontFamily: 'sans-serif', letterSpacing: '1px'}}>SnapCard</h1>
+                        <h1 style={{fontSize: '32px', fontWeight: '900', color: white, fontFamily: 'sans-serif', letterSpacing: '1px'}}>SnapCard</h1>
                         <p style={{fontSize: '14px', color: '#cbd5e1', fontFamily: 'sans-serif', marginTop: '12px', letterSpacing: '2px', fontWeight: 300}}>每一次相遇都值得期待</p>
                     </div>
                 );
