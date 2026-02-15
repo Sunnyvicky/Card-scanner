@@ -1,60 +1,115 @@
-
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SnapCard AI - 專業人脈管家</title>
+    
+    <!-- PWA 設定 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#1e3a8a">
+    <meta name="apple-mobile-web-app-title" content="SnapCard">
+    <meta name="theme-color" content="#ffffff">
     
-    <!-- App Icon: Final Version (Stack + Centered + Text) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3Cfilter id='shadow'%3E%3CfeDropShadow dx='0' dy='10' stdDeviation='15' flood-color='%23000000' flood-opacity='0.25'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='200' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a' filter='url(%23shadow)'/%3E%3Ccircle cx='256' cy='200' r='36' fill='%23f59e0b'/%3E%3Ccircle cx='270' cy='190' r='8' fill='%23ffffff' opacity='0.3'/%3E%3Crect x='186' y='260' width='140' height='16' rx='8' fill='%23ffffff'/%3E%3Crect x='156' y='290' width='200' height='10' rx='5' fill='%2364748b'/%3E%3Crect x='196' y='310' width='120' height='10' rx='5' fill='%2364748b' opacity='0.7'/%3E%3Ctext x='256' y='440' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle' letter-spacing='-1'%3ESnapCard%3C/text%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3Cfilter id='shadow'%3E%3CfeDropShadow dx='0' dy='10' stdDeviation='15' flood-color='%23000000' flood-opacity='0.25'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='200' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a' filter='url(%23shadow)'/%3E%3Ccircle cx='256' cy='200' r='36' fill='%23f59e0b'/%3E%3Ccircle cx='270' cy='190' r='8' fill='%23ffffff' opacity='0.3'/%3E%3Crect x='186' y='260' width='140' height='16' rx='8' fill='%23ffffff'/%3E%3Crect x='156' y='290' width='200' height='10' rx='5' fill='%2364748b'/%3E%3Crect x='196' y='310' width='120' height='10' rx='5' fill='%2364748b' opacity='0.7'/%3E%3Ctext x='256' y='440' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle' letter-spacing='-1'%3ESnapCard%3C/text%3E%3C/svg%3E">
+    <!-- App Icon: 最終定案版 -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3Cfilter id='shadow'%3E%3CfeDropShadow dx='0' dy='10' stdDeviation='15' flood-color='%23000000' flood-opacity='0.2'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='220' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a' filter='url(%23shadow)'/%3E%3Ccircle cx='256' cy='200' r='36' fill='%23f59e0b'/%3E%3Ccircle cx='270' cy='190' r='8' fill='%23ffffff' opacity='0.3'/%3E%3Crect x='186' y='260' width='140' height='16' rx='8' fill='%23ffffff'/%3E%3Crect x='156' y='290' width='200' height='10' rx='5' fill='%2364748b'/%3E%3Crect x='196' y='310' width='120' height='10' rx='5' fill='%2364748b' opacity='0.7'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='60' fill='%231e3a8a' text-anchor='middle' letter-spacing='-1'%3ESnapCard%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3Cfilter id='shadow'%3E%3CfeDropShadow dx='0' dy='10' stdDeviation='15' flood-color='%23000000' flood-opacity='0.2'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='220' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a' filter='url(%23shadow)'/%3E%3Ccircle cx='256' cy='200' r='36' fill='%23f59e0b'/%3E%3Ccircle cx='270' cy='190' r='8' fill='%23ffffff' opacity='0.3'/%3E%3Crect x='186' y='260' width='140' height='16' rx='8' fill='%23ffffff'/%3E%3Crect x='156' y='290' width='200' height='10' rx='5' fill='%2364748b'/%3E%3Crect x='196' y='310' width='120' height='10' rx='5' fill='%2364748b' opacity='0.7'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='60' fill='%231e3a8a' text-anchor='middle' letter-spacing='-1'%3ESnapCard%3C/text%3E%3C/svg%3E">
 
+    <!-- Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
-        body { background-color: #f8fafc; color: #1e293b; margin: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 10; transform: scaleX(1); }
-        @keyframes scan { 0% { top: 0%; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
-        .scan-line { position: absolute; left: 0; width: 100%; height: 2px; background: #f97316; box-shadow: 0 0 10px #f97316; animation: scan 2s linear infinite; }
-        .splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s; }
+        body { 
+            background-color: #f8fafc; 
+            color: #1e293b; 
+            margin: 0; 
+            overflow-x: hidden; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        .hide-scrollbar::-webkit-scrollbar { 
+            display: none; 
+        }
+        /* 強制影片滿版且最上層 */
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 10;
+            transform: scaleX(1);
+        }
+        /* 掃描線動畫 */
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .scan-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #f97316;
+            box-shadow: 0 0 10px #f97316;
+            animation: scan 2s linear infinite;
+        }
+        /* 啟動畫面樣式 */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
     </style>
 </head>
 <body>
     <div id="root">
+        <!-- 預先顯示的啟動畫面 -->
         <div class="splash-screen">
-            <!-- Splash Screen Logo (Matches App Icon) -->
-            <div style="width: 80px; height: 80px; background: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 512 512" fill="none">
-                    <rect x="126" y="110" width="300" height="200" rx="24" fill="#cbd5e1" transform="rotate(6 276 210)"/>
+            <div style="width: 120px; height: 120px; margin-bottom: 20px;">
+               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+                    <rect x="126" y="110" width="300" height="220" rx="24" fill="#cbd5e1" transform="rotate(6 276 210)"/>
                     <rect x="96" y="126" width="320" height="220" rx="24" fill="#1e3a8a"/>
                     <circle cx="256" cy="200" r="36" fill="#f59e0b"/>
                     <rect x="186" y="260" width="140" height="16" rx="8" fill="#ffffff"/>
                     <rect x="156" y="290" width="200" height="10" rx="5" fill="#64748b"/>
                 </svg>
             </div>
-            <h1 style="font-size: 20px; font-weight: 900; color: #1e293b; font-family: sans-serif;">SNAPCARD AI</h1>
+            <h1 style="font-size: 24px; font-weight: 900; color: #1e3a8a; font-family: sans-serif;">SNAPCARD AI</h1>
             <p style="font-size: 14px; color: #64748b; font-family: sans-serif; margin-top: 8px;">人脈，是最好的資產</p>
         </div>
     </div>
     
     <script>
-        window.onerror = function(m) { const r=document.getElementById('root'); if(r)r.innerHTML='<div style="padding:20px;text-align:center;color:red;margin-top:50px;"><h3>Error</h3><p>'+m+'</p><button onclick="localStorage.clear();location.reload()" style="padding:10px;">Reset</button></div>'; };
+        window.onerror = function(message) {
+            const root = document.getElementById('root');
+            if (root) {
+                root.innerHTML = '<div style="padding:20px; text-align:center; color:red; margin-top:50px;"><h3>應用程式發生錯誤</h3><p>' + message + '</p><button onclick="localStorage.clear();location.reload()" style="padding:10px; background:#eee; border:1px solid #ccc; border-radius:5px; margin-top:10px;">清除資料並重整</button></div>';
+            }
+        };
     </script>
     
     <script type="text/babel">
         const { useState, useRef, useEffect, useMemo, Component } = React;
 
-        const safeLS = {
-            get: (k) => { try { return localStorage.getItem(k); } catch(e) { return null; } },
-            set: (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} },
-            remove: (k) => { try { localStorage.removeItem(k); } catch(e) {} }
+        const safeLocalStorage = {
+            getItem: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
+            setItem: (key, value) => { try { localStorage.setItem(key, value); } catch (e) {} },
+            removeItem: (key) => { try { localStorage.removeItem(key); } catch (e) {} }
         };
 
         const dbUtils = {
@@ -72,15 +127,25 @@
         }
 
         const Icon = ({ name, size = 20, className = "" }) => {
-            const [svgContent, setSvgContent] = useState("");
+            const ref = useRef(null);
             useEffect(() => {
-                if (window.lucide && window.lucide.icons && window.lucide.icons[name]) {
-                    const svgString = window.lucide.icons[name].toSVG({ width: size, height: size, class: className });
-                    setSvgContent(svgString);
+                if (!ref.current || !window.lucide) return;
+                const container = ref.current;
+                container.innerHTML = '';
+                const i = document.createElement('i');
+                i.setAttribute('data-lucide', name);
+                if(className) {
+                    className.split(' ').forEach(cls => {
+                        if(cls) i.classList.add(cls);
+                    });
                 }
+                container.appendChild(i);
+                window.lucide.createIcons({
+                    root: container,
+                    attrs: { width: size, height: size, class: className }
+                });
             }, [name, size, className]);
-            if (!svgContent) return <span style={{width: size, height: size, display: 'inline-block'}} className={className}></span>;
-            return <span dangerouslySetInnerHTML={{ __html: svgContent }} style={{ display: 'inline-flex', alignItems: 'center' }} />;
+            return <span ref={ref} style={{ display: 'inline-flex', alignItems: 'center' }}></span>;
         };
 
         const compressImage = (file) => new Promise((res,rej)=>{
@@ -91,22 +156,62 @@
         const CameraScanner = ({onCapture,onCancel}) => {
             const vRef = useRef(null);
             const [error, setError] = useState(null);
+            
             useEffect(()=>{ 
                 let s = null; 
                 const init = async () => {
-                    try { s = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment", width: { ideal: 1920 }, height: { ideal: 1080 }}}); if(vRef.current) { vRef.current.srcObject=s; vRef.current.play().catch(console.error); } } catch(e) { setError("相機錯誤: "+e.message); }
+                    try {
+                        s = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment", width: { ideal: 1920 }, height: { ideal: 1080 }}});
+                        if(vRef.current) { vRef.current.srcObject=s; vRef.current.play().catch(console.error); }
+                    } catch(e) { setError("相機錯誤: "+e.message); }
                 };
                 init();
                 return ()=>s?.getTracks().forEach(t=>t.stop()); 
             },[]);
-            const capture = () => { if(!vRef.current)return; const v = vRef.current; const c = document.createElement("canvas"); c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v,0,0); onCapture(c.toDataURL("image/jpeg",0.8)); };
+            
+            const capture = () => { 
+                if(!vRef.current)return; 
+                const v = vRef.current; 
+                const c = document.createElement("canvas"); 
+                
+                const videoRatio = v.videoWidth / v.videoHeight;
+                const displayRatio = v.clientWidth / v.clientHeight;
+                let sWidth = v.videoWidth;
+                let sHeight = v.videoHeight;
+                let sx = 0, sy = 0;
+                
+                if (videoRatio > displayRatio) {
+                    sWidth = v.videoHeight * displayRatio; sx = (v.videoWidth - sWidth) / 2;
+                } else {
+                    sHeight = v.videoWidth / displayRatio; sy = (v.videoHeight - sHeight) / 2;
+                }
+                
+                const frameW = sWidth * 0.75;
+                const frameH = frameW / 1.6;
+                const frameX = sx + (sWidth - frameW) / 2;
+                const frameY = sy + (sHeight - frameH) / 2;
+                
+                const MAX_DIM = 1200; let destW = frameW, destH = frameH;
+                if (destW > MAX_DIM || destH > MAX_DIM) { const scale = Math.min(MAX_DIM / destW, MAX_DIM / destH); destW *= scale; destH *= scale; }
+                c.width = destW; c.height = destH; 
+                c.getContext('2d').drawImage(v, frameX, frameY, frameW, frameH, 0, 0, destW, destH); 
+                onCapture(c.toDataURL("image/jpeg",0.8)); 
+            };
+
             return (
                 <div className="fixed inset-0 bg-black z-50 flex flex-col">
                     <div className="flex-1 relative overflow-hidden">
                         <video ref={vRef} playsInline muted autoPlay className="w-full h-full object-cover" />
                         {error && <div className="absolute inset-0 flex items-center justify-center text-white bg-black/80">{error}</div>}
+                        
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                            <div className="w-3/4 aspect-[1.6/1] border-2 border-blue-500 rounded-xl relative shadow-[0_0_0_999px_rgba(0,0,0,0.5)] overflow-hidden"><div className="scan-line"></div></div>
+                            <div className="w-3/4 aspect-[1.6/1] border-2 border-blue-500 rounded-xl relative shadow-[0_0_0_999px_rgba(0,0,0,0.5)] overflow-hidden">
+                                <div className="scan-line"></div>
+                                <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-blue-500 -mt-1 -ml-1"></div>
+                                <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-blue-500 -mt-1 -mr-1"></div>
+                                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-blue-500 -mb-1 -ml-1"></div>
+                                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-blue-500 -mb-1 -mr-1"></div>
+                            </div>
                         </div>
                         <div className="absolute bottom-32 w-full text-center z-20"><span className="px-4 py-2 bg-black/50 text-white text-xs rounded-full">請將名片放入框內</span></div>
                     </div>
@@ -135,7 +240,7 @@
             const [searchQuery, setSearchQuery] = useState("");
             
             const [apiKey, setApiKey] = useState("");
-            const [selectedModel, setSelectedModel] = useState("");
+            const [selectedModel, setSelectedModel] = useState(""); 
             const [availableModels, setAvailableModels] = useState([]);
             
             const [testStatus, setTestStatus] = useState("idle"); 
@@ -146,17 +251,28 @@
             const randomInputName = useMemo(() => `s_${Math.random().toString(36).slice(2)}`, []);
 
             useEffect(() => { 
-                safeLS.remove("snapcard_api_key"); 
+                // [修正] 使用正確的 removeItem 方法
+                safeLocalStorage.removeItem("snapcard_api_key"); 
                 setTimeout(() => setShowSplash(false), 2000); 
             }, []);
             
-            useEffect(() => { const l=async()=>{ try{const d=await dbUtils.getAll(); setCards(d.sort((a,b)=>b.id-a.id));}catch(e){} }; l(); }, []);
+            useEffect(() => { const l=async()=>{ try{const d=await dbUtils.getAll(); setCards(sortCardsList(d));}catch(e){} }; l(); }, []);
+            useEffect(() => { setTimeout(() => window.lucide?.createIcons(), 100); }, [view, cards, resultData]);
 
             const startScanFlow = () => { if (!apiKey) { setView("settings"); return; } setView("scan"); };
             const handleManualAdd = () => { setResultData({ category: "工作-客戶" }); setCapturedImage(null); setBackImage(null); setCurrentAvatar(null); setAdditionalImage(null); setCurrentCardId(null); setView("result"); };
             const handleScanCapture = (base64) => { setCapturedImage(base64); setView("home"); analyze(base64); };
             const handleImageUpload = async (e, setter) => { if (e.target.files[0]) { try { const b = await compressImage(e.target.files[0]); setter(b); } catch(err) { alert("圖片處理失敗"); } } };
-            const clearApiKey = () => { setApiKey(""); safeLS.remove("snapcard_api_key"); setTestStatus("idle"); setTestMessage(""); setAvailableModels([]); setSelectedModel(""); };
+            
+            const clearApiKey = () => { 
+                setApiKey(""); 
+                safeLocalStorage.removeItem("snapcard_api_key"); 
+                setTestStatus("idle"); 
+                setTestMessage(""); 
+                setAvailableModels([]);
+                setSelectedModel("");
+            };
+
             const sanitizeKey = (k) => k.trim().replace(/[\r\n\s]/g, '');
 
             const fetchWithRetry = async (url, options) => {
@@ -164,58 +280,106 @@
                 for (let i = 0; i <= delays.length; i++) {
                     try {
                         const res = await fetch(url, options);
-                        if (res.status === 429) return res; 
-                        if (!res.ok && res.status >= 500 && i < delays.length) { await new Promise(resolve => setTimeout(resolve, delays[i])); continue; }
+                        if (res.status === 429) {
+                            return res; 
+                        }
+                        if (!res.ok && res.status >= 500 && i < delays.length) {
+                            await new Promise(resolve => setTimeout(resolve, delays[i]));
+                            continue;
+                        }
                         return res; 
-                    } catch (err) { if (i === delays.length) throw err; await new Promise(resolve => setTimeout(resolve, delays[i])); }
+                    } catch (err) {
+                        if (i === delays.length) throw err;
+                        await new Promise(resolve => setTimeout(resolve, delays[i]));
+                    }
                 }
             };
 
             const getUsableModels = async (cleanKey) => {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`;
                 const res = await fetchWithRetry(url, { method: 'GET' });
-                if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(`[${res.status}] ${err.error?.message || res.statusText}`); }
+                
+                if (!res.ok) {
+                    const err = await res.json().catch(()=>({}));
+                    throw new Error(`[${res.status}] ${err.error?.message || res.statusText}`);
+                }
+                
                 const data = await res.json();
+                if (!data.models) throw new Error("API 回傳格式異常");
+
                 const usable = data.models
-                    .filter(m => m.supportedGenerationMethods?.includes("generateContent") && m.name.includes("gemini") && !m.name.includes("1.5")) 
+                    .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+                    .filter(m => m.name.includes("gemini") && !m.name.includes("1.5")) 
                     .map(m => m.name.replace("models/", ""));
+                
                 if (usable.length === 0) throw new Error("此 Key 無法存取 Gemini 2.0/3.0 模型");
                 return usable;
             };
 
             const fetchModelsAndTest = async () => {
                 if(!apiKey) return setTestMessage("請輸入 Key");
-                setTestStatus("testing"); setTestMessage("正在查詢授權...");
+                setTestStatus("testing"); setTestMessage("正在查詢您的授權模型...");
+                
                 try {
                     const cleanKey = sanitizeKey(apiKey);
                     const usableModels = await getUsableModels(cleanKey);
                     setAvailableModels(usableModels);
-                    let bestModel = usableModels.find(m => m.includes("gemini-3.0")) || usableModels.find(m => m.includes("gemini-2.0")) || usableModels[0];
+                    
+                    let bestModel = usableModels.find(m => m.includes("gemini-3.0")) ||
+                                    usableModels.find(m => m.includes("gemini-2.0")) || 
+                                    usableModels[0];
+                    
                     setSelectedModel(bestModel);
-                    setTestStatus("success"); setTestMessage(`驗證成功！已鎖定：${bestModel}`);
-                } catch(e) { setTestStatus("error"); setTestMessage(`失敗: ${e.message}`); }
+                    setTestStatus("success"); 
+                    setTestMessage(`驗證成功！已自動偵測最新模型：${bestModel}`);
+                    
+                } catch(e) { 
+                    setTestStatus("error"); 
+                    setTestMessage(`失敗: ${e.message}`); 
+                }
             };
 
             const analyze = async (base64) => {
                 setIsProcessing(true); setError(null);
-                if (!apiKey) { setError("請先設定 API Key"); setView("settings"); setIsProcessing(false); return; }
+                
+                if (!apiKey) {
+                    setError("請先設定 API Key"); setView("settings"); setIsProcessing(false); return;
+                }
+
                 const cleanKey = sanitizeKey(apiKey);
                 let actualModels = availableModels;
+
                 try {
                     if (actualModels.length === 0) {
-                        setStatusMsg("正在向 Google 確認授權...");
+                        setStatusMsg("正在向 Google 確認授權模型...");
                         actualModels = await getUsableModels(cleanKey);
                         setAvailableModels(actualModels);
-                        let bestModel = actualModels.find(m => m.includes("gemini-3.0")) || actualModels.find(m => m.includes("gemini-2.0")) || actualModels[0];
+                        
+                        let bestModel = actualModels.find(m => m.includes("gemini-3.0")) ||
+                                        actualModels.find(m => m.includes("gemini-2.0")) || 
+                                        actualModels[0];
                         setSelectedModel(bestModel);
                     }
-                    let modelsToTry = [];
-                    const target = selectedModel || actualModels[0];
-                    if (target) modelsToTry.push(target);
-                    const sorted = [...actualModels].sort((a,b)=>(b.includes("3.0")?3:b.includes("2.0")?2:0)-(a.includes("3.0")?3:a.includes("2.0")?2:0));
-                    sorted.forEach(m=>{if(!modelsToTry.includes(m))modelsToTry.push(m)});
 
-                    let lastError = "", successJson = null;
+                    let modelsToTry = [];
+                    const target = selectedModel || actualModels.find(m => m.includes("gemini-3.0")) || actualModels.find(m => m.includes("gemini-2.0")) || actualModels[0];
+                    
+                    if (target && actualModels.includes(target)) {
+                        modelsToTry.push(target);
+                    }
+                    
+                    const sortedModels = [...actualModels].sort((a, b) => {
+                        const scoreA = a.includes("3.0") ? 3 : (a.includes("2.0") ? 2 : 0);
+                        const scoreB = b.includes("3.0") ? 3 : (b.includes("2.0") ? 2 : 0);
+                        return scoreB - scoreA;
+                    });
+                    
+                    for (const m of sortedModels) {
+                        if (!modelsToTry.includes(m)) modelsToTry.push(m);
+                    }
+
+                    let lastError = "";
+                    let successJson = null;
                     const prompt = `分析名片回傳JSON:{"name":"","jobTitle":"","company":"","mobile":"","tel":"","fax":"","email":"","address":"","category":"工作-客戶","note":""}。規則:1.分mobile/tel/fax 2.company合併中英 3.category[工作-客戶,工作-廠商,家人,朋友]。無Markdown。`;
                     const imagePart = { inlineData: { mimeType: "image/jpeg", data: base64.split(',')[1] } };
 
@@ -223,25 +387,64 @@
                         setStatusMsg(`AI 辨識中 (${model})...`);
                         try {
                             const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
-                            const res = await fetchWithRetry(url, { method: "POST", headers: { "Content-Type": "application/json" }, referrerPolicy: "no-referrer", body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, imagePart] }] }) });
+                            
+                            const res = await fetchWithRetry(url, {
+                                method: "POST", 
+                                headers: { "Content-Type": "application/json" },
+                                referrerPolicy: "no-referrer",
+                                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, imagePart] }] })
+                            });
+
                             if (!res.ok) {
                                 const err = await res.json().catch(()=>({}));
-                                const msg = err.error?.message || res.statusText;
-                                if (res.status === 400 && (msg.includes("API key") || msg.includes("INVALID_ARGUMENT"))) throw new Error("API Key 無效");
-                                console.warn(`[${model}] 失敗: ${msg}`); lastError = msg; continue; 
+                                const errMsg = err.error?.message || res.statusText;
+                                
+                                if (res.status === 400 && (errMsg.includes("API key") || errMsg.includes("INVALID_ARGUMENT"))) {
+                                    throw new Error("API Key 無效，請檢查設定");
+                                }
+                                
+                                console.warn(`[${model}] 失敗 (${res.status})，瞬間跳過...`);
+                                lastError = `[${res.status}] ${errMsg}`;
+                                continue; 
                             }
+
                             const json = await res.json();
                             let text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-                            if(!text) { lastError="空白內容"; continue; }
+                            if(!text) {
+                                lastError = "模型回傳空白內容";
+                                continue;
+                            }
+                            
                             text = text.replace(/```json|```/g, '').trim();
                             const start = text.indexOf('{'), end = text.lastIndexOf('}');
+                            if (start === -1 || end === -1) {
+                                lastError = "JSON 格式解析錯誤";
+                                continue;
+                            }
+                            
                             successJson = JSON.parse(text.substring(start, end + 1));
                             break; 
-                        } catch(e) { if(e.message.includes("API Key")) throw e; lastError=e.message; }
+
+                        } catch(e) {
+                            if (e.message.includes("API Key")) throw e;
+                            lastError = e.message;
+                        }
                     }
-                    if (!successJson) throw new Error(`連線失敗 (${lastError})`);
-                    setResultData(successJson || { category: "工作-客戶" }); setBackImage(null); setAdditionalImage(null); setCurrentAvatar(null); setCurrentCardId(null); setView("result");
-                } catch(e) { setError(`辨識失敗: ${e.message}`); setView("home"); } finally { setIsProcessing(false); }
+
+                    if (!successJson) {
+                        throw new Error(`所有模型皆忙碌或達到額度上限 (${lastError})。請稍等一分鐘後再試。`);
+                    }
+                    
+                    setResultData(successJson || { category: "工作-客戶" });
+                    setBackImage(null); setAdditionalImage(null); setCurrentAvatar(null); setCurrentCardId(null);
+                    setView("result");
+
+                } catch(e) {
+                    setError(`辨識失敗: ${e.message}`);
+                    setView("home");
+                } finally {
+                    setIsProcessing(false);
+                }
             };
 
             const saveCard = async () => {
@@ -252,27 +455,35 @@
                 setView("home");
             };
             
-            const handleDeleteCard = async (id, e) => { e.stopPropagation(); if(confirm("刪除?")) { await dbUtils.delete(id); setCards(prev => prev.filter(c => c.id !== id)); } };
+            const handleDeleteCard = async (id, e) => {
+                e.stopPropagation(); if(confirm("刪除?")) { await dbUtils.delete(id); setCards(prev => prev.filter(c => c.id !== id)); }
+            };
             
             const sortCardsList = (cardsArray) => {
                 return [...cardsArray].sort((a, b) => {
                     const compA = (a.company || "").toString().toLowerCase();
                     const compB = (b.company || "").toString().toLowerCase();
-                    if (compA < compB) return -1; if (compA > compB) return 1;
+                    if (compA < compB) return -1;
+                    if (compA > compB) return 1;
+                    
                     const nameA = (a.name || "").toString().toLowerCase();
                     const nameB = (b.name || "").toString().toLowerCase();
-                    if (nameA < nameB) return -1; if (nameA > nameB) return 1;
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    
                     return b.id - a.id;
                 });
             };
 
-            // [新增功能] 下載單一聯絡人 VCF
             const downloadSingleVcf = () => {
                 const card = resultData;
                 let vcf = "BEGIN:VCARD\nVERSION:3.0\n";
                 let displayName = card.name || "未命名";
                 if (card.company) displayName = `${card.company} ${displayName}`;
-                vcf += `FN:${displayName}\nN:${displayName};;;;\n`;
+                
+                vcf += `FN:${displayName}\n`;
+                vcf += `N:${displayName};;;;\n`;
+                
                 if (card.company) vcf += `ORG:${card.company};\n`;
                 if (card.jobTitle) vcf += `TITLE:${card.jobTitle}\n`;
                 if (card.mobile) vcf += `TEL;type=CELL:${card.mobile}\n`;
@@ -280,7 +491,12 @@
                 if (card.fax) vcf += `TEL;type=FAX:${card.fax}\n`;
                 if (card.email) vcf += `EMAIL;type=INTERNET;type=WORK:${card.email}\n`;
                 if (card.address) vcf += `ADR;type=WORK:;;${card.address};;;;\n`;
-                if (card.note) vcf += `NOTE:${card.note}\n`;
+                
+                let notes = [];
+                if (card.category) notes.push(`分類: ${card.category}`);
+                if (card.note) notes.push(card.note);
+                if (notes.length > 0) vcf += `NOTE:${notes.join(' | ')}\n`;
+                
                 vcf += "END:VCARD\n";
                 
                 const blob = new Blob([vcf], { type: 'text/vcard' });
@@ -301,15 +517,32 @@
                 const file = e.target.files[0]; if(!file)return;
                 const r = new FileReader(); r.onload=async(ev)=>{
                     try { const d = JSON.parse(ev.target.result); for(const c of d) await dbUtils.put(c); 
-                    const all = await dbUtils.getAll(); setCards(sortCardsList(all)); alert("匯入成功"); } catch{alert("格式錯誤");}
+                    const all = await dbUtils.getAll(); 
+                    setCards(sortCardsList(all)); 
+                    alert("匯入成功"); } catch{alert("格式錯誤");}
                 }; r.readAsText(file); e.target.value='';
             };
-            const clearAllData = async () => { if(confirm("確定清空?")) { try { await dbUtils.clear(); setCards([]); safeLS.remove("snapcard_cards"); alert("已清空"); } catch (e) { alert("失敗"); } } };
 
             const baseModels = ["gemini-3.0-flash", "gemini-3.0-pro", "gemini-2.0-flash", "gemini-2.0-flash-exp"];
             const dropdownModels = [...new Set([...baseModels, ...availableModels])].filter(m => !m.includes("1.5"));
 
-            if (showSplash) return null;
+            if (showSplash) {
+                return (
+                    <div className="fixed inset-0 bg-[#ffffff] z-[9999] flex flex-col items-center justify-center">
+                        <div style={{ width: '120px', height: '120px', marginBottom: '20px' }}>
+                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+                                <rect x="126" y="110" width="300" height="220" rx="24" fill="#cbd5e1" transform="rotate(6 276 210)"/>
+                                <rect x="96" y="126" width="320" height="220" rx="24" fill="#1e3a8a"/>
+                                <circle cx="256" cy="200" r="36" fill="#f59e0b"/>
+                                <rect x="186" y="260" width="140" height="16" rx="8" fill="#ffffff"/>
+                                <rect x="156" y="290" width="200" height="10" rx="5" fill="#64748b"/>
+                            </svg>
+                        </div>
+                        <h1 style={{fontSize: '24px', fontWeight: '900', color: '#1e3a8a', fontFamily: 'sans-serif'}}>SNAPCARD AI</h1>
+                        <p style={{fontSize: '14px', color: '#64748b', fontFamily: 'sans-serif', marginTop: '8px'}}>人脈，是最好的資產</p>
+                    </div>
+                );
+            }
 
             return (
                 <div className="max-w-md mx-auto h-screen bg-gray-50 flex flex-col font-sans border-x border-gray-200">
@@ -338,8 +571,8 @@
                                     <div key={c.id} onClick={()=>{setResultData(c);setCapturedImage(c.image);setBackImage(c.backImage);setCurrentAvatar(c.avatar);setAdditionalImage(c.additionalImage);setCurrentCardId(c.id);setView("result");}} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
                                         {c.avatar ? <img src={c.avatar} className="w-12 h-12 rounded-full object-cover"/> : <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 font-bold">{c.name?.[0]}</div>}
                                         <div className="flex-1 min-w-0">
+                                            <div className="font-bold text-gray-800 truncate text-base">{c.company}</div>
                                             <div className="font-bold text-gray-800 truncate text-base">{c.name}</div>
-                                            <div className="font-bold text-gray-800 truncate text-base">{c.company||c.jobTitle}</div>
                                         </div>
                                         <button onClick={(e)=>handleDeleteCard(c.id,e)} className="p-2 text-gray-300 hover:text-red-500"><Icon name="trash-2" size={16}/></button>
                                     </div>
@@ -370,7 +603,7 @@
                                     )}
 
                                     <div className="flex gap-2">
-                                        <button onClick={fetchModelsAndTest} disabled={testStatus==="testing"} className={`flex-1 py-2 rounded-lg text-sm font-bold ${testStatus==="success"?"bg-green-100 text-green-700":testStatus==="error"?"bg-red-100 text-red-700":"bg-blue-100 text-blue-700"}`}>{testStatus==="testing"?"偵測中...":testStatus==="success"?"偵測成功":"偵測可用模型"}</button>
+                                        <button onClick={fetchModelsAndTest} disabled={testStatus==="testing"} className={`flex-1 py-2 rounded-lg text-sm font-bold ${testStatus==="success"?"bg-green-100 text-green-700":testStatus==="error"?"bg-red-100 text-red-700":"bg-blue-100 text-blue-700"}`}>{testStatus==="testing"?"偵測中...":testStatus==="success"?"偵測成功":"偵測可用模型清單"}</button>
                                         <button onClick={()=>window.open("https://aistudio.google.com/app/apikey")} className="flex-1 bg-gray-100 text-gray-600 py-2 rounded-lg text-sm font-bold">取得 Key</button>
                                     </div>
                                     {testMessage && <div className={`text-xs mt-2 p-2 rounded ${testStatus==="error"?"text-red-600 bg-red-50":"text-green-600 bg-green-50"}`}>{testMessage}</div>}
@@ -382,7 +615,7 @@
                                         <label className="w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"><span>匯入</span><Icon name="download" size={18}/><input type="file" accept=".json" onChange={importData} className="hidden"/></label>
                                     </div>
                                 </div>
-                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 16.0 (Final)</div>
+                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 26.0 (Final Fix)</div>
                                 <button onClick={()=>setView("home")} className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold mt-4">返回</button>
                             </div>
                         )}
@@ -420,7 +653,11 @@
                                             }
                                             return (
                                                 <div key={f.k} className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl relative">
-                                                    {href ? <a href={href} target={target} className="text-blue-500 hover:text-blue-700 p-2 -m-2 z-10"><Icon name={f.i} size={18}/></a> : <Icon name={f.i} className="text-gray-400" size={18}/>}
+                                                    {href ? (
+                                                        <a href={href} target={target} className="text-blue-500 hover:text-blue-700 p-2 -m-2 z-10"><Icon name={f.i} size={18}/></a>
+                                                    ) : (
+                                                        <Icon name={f.i} className="text-gray-400" size={18}/>
+                                                    )}
                                                     <input type="text" value={resultData[f.k]||""} onChange={e=>setResultData({...resultData,[f.k]:e.target.value})} placeholder={f.p} className="flex-1 bg-transparent text-sm focus:outline-none min-w-0" />
                                                 </div>
                                             );
@@ -450,7 +687,8 @@
                             <div className="flex items-center gap-8 bg-white/90 backdrop-blur-md px-8 py-3 rounded-full shadow-2xl pointer-events-auto border border-gray-100/50">
                                 <button onClick={startScanFlow} className="relative -top-8 group flex flex-col items-center">
                                     <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-full flex items-center justify-center shadow-[0_8px_20px_rgb(37,99,235,0.4)] border-4 border-white group-active:scale-95 transition-all">
-                                        <Icon name="camera" size={28} className="text-white"/>
+                                        {/* [修正] 掃描按鈕改回經典 scan-line 圖示 */}
+                                        <Icon name="scan-line" size={32} className="text-white"/>
                                     </div>
                                     <span className="text-[10px] font-bold text-blue-700 mt-1 absolute -bottom-5">掃描名片</span>
                                 </button>
