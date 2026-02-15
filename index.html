@@ -11,10 +11,9 @@
     <meta name="apple-mobile-web-app-title" content="SnapCard">
     <meta name="theme-color" content="#ffffff">
     
-    <!-- App Icon: 桌面圖示 (白底 + 藍名片 + 置中橘圓 + 文字) -->
-    <!-- 採用初期開發成功的極簡 SVG 技術，提高 iOS Safari 讀取成功率 -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a'/%3E%3Ccircle cx='256' cy='236' r='45' fill='%23f59e0b'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a'/%3E%3Ccircle cx='256' cy='236' r='45' fill='%23f59e0b'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
+    <!-- App Icon: 採用初期成功的 Base64 編碼技術，確保 iOS 桌面圖示顯示正常 (白底 + 藍名片 + 置中橘圓 + 文字) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iI2ZmZmZmZiIvPjxyZWN0IHg9Ijk2IiB5PSIxMjYiIHdpZHRoPSIzMjAiIGhlaWdodD0iMjIwIiByeD0iMjQiIGZpbGw9IiMxZTNhOGEiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMzYiIHI9IjQ1IiBmaWxsPSIjZjU5ZTBiIi8+PHRleHQgeD0iMjU2IiB5PSI0NjAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjY0IiBmaWxsPSIjMWUzYThhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TbmFwQ2FyZDwvdGV4dD48L3N2Zz4=">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iI2ZmZmZmZiIvPjxyZWN0IHg9Ijk2IiB5PSIxMjYiIHdpZHRoPSIzMjAiIGhlaWdodD0iMjIwIiByeD0iMjQiIGZpbGw9IiMxZTNhOGEiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMzYiIHI9IjQ1IiBmaWxsPSIjZjU5ZTBiIi8+PHRleHQgeD0iMjU2IiB5PSI0NjAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjY0IiBmaWxsPSIjMWUzYThhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TbmFwQ2FyZDwvdGV4dD48L3N2Zz4=">
 
     <!-- Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -183,7 +182,7 @@
                 if (videoRatio > displayRatio) {
                     sWidth = v.videoHeight * displayRatio; sx = (v.videoWidth - sWidth) / 2;
                 } else {
-                    sHeight = v.videoHeight * displayRatio; sy = (v.videoHeight - sHeight) / 2;
+                    sHeight = v.videoWidth / displayRatio; sy = (v.videoHeight - sHeight) / 2;
                 }
                 const frameW = sWidth * 0.75, frameH = frameW / 1.6;
                 const frameX = sx + (sWidth - frameW) / 2, frameY = sy + (sHeight - frameH) / 2;
@@ -403,7 +402,7 @@
                                 </rect>
                             </svg>
                         </div>
-                        <h1 style={{fontSize: '32px', fontWeight: '900', color: white, fontFamily: 'sans-serif', letterSpacing: '1px'}}>SnapCard</h1>
+                        <h1 style={{fontSize: '32px', fontWeight: '900', color: 'white', fontFamily: 'sans-serif', letterSpacing: '1px'}}>SnapCard</h1>
                         <p style={{fontSize: '14px', color: '#cbd5e1', fontFamily: 'sans-serif', marginTop: '12px', letterSpacing: '2px', fontWeight: 300}}>每一次相遇都值得期待</p>
                     </div>
                 );
@@ -480,7 +479,7 @@
                                         <label className="w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"><span>匯入</span><Icon name="download" size={18}/><input type="file" accept=".json" onChange={importData} className="hidden"/></label>
                                     </div>
                                 </div>
-                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 38.0 (Corrected Icons & Splash)</div>
+                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 38.1 (Legacy Encoding Fixed)</div>
                                 <button onClick={()=>setView("home")} className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold mt-4">返回</button>
                             </div>
                         )}
