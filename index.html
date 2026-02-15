@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -9,12 +9,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SnapCard">
-    <meta name="theme-color" content="#1e3a8a">
+    <meta name="theme-color" content="#ffffff">
     
-    <!-- App Icon: 最終定案版 (白底 + 深藍名片置中 + SnapCard文字) -->
-    <!-- 這是手機桌面上看到的圖示 -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3Cfilter id='shadow'%3E%3CfeDropShadow dx='0' dy='10' stdDeviation='15' flood-color='%23000000' flood-opacity='0.2'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='220' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a' filter='url(%23shadow)'/%3E%3Ccircle cx='256' cy='200' r='36' fill='%23f59e0b'/%3E%3Ccircle cx='270' cy='190' r='8' fill='%23ffffff' opacity='0.3'/%3E%3Crect x='186' y='260' width='140' height='16' rx='8' fill='%23ffffff'/%3E%3Crect x='156' y='290' width='200' height='10' rx='5' fill='%2364748b'/%3E%3Crect x='196' y='310' width='120' height='10' rx='5' fill='%2364748b' opacity='0.7'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='60' fill='%231e3a8a' text-anchor='middle' letter-spacing='-1'%3ESnapCard%3C/text%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3Cfilter id='shadow'%3E%3CfeDropShadow dx='0' dy='10' stdDeviation='15' flood-color='%23000000' flood-opacity='0.2'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='220' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a' filter='url(%23shadow)'/%3E%3Ccircle cx='256' cy='200' r='36' fill='%23f59e0b'/%3E%3Ccircle cx='270' cy='190' r='8' fill='%23ffffff' opacity='0.3'/%3E%3Crect x='186' y='260' width='140' height='16' rx='8' fill='%23ffffff'/%3E%3Crect x='156' y='290' width='200' height='10' rx='5' fill='%2364748b'/%3E%3Crect x='196' y='310' width='120' height='10' rx='5' fill='%2364748b' opacity='0.7'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='60' fill='%231e3a8a' text-anchor='middle' letter-spacing='-1'%3ESnapCard%3C/text%3E%3C/svg%3E">
+    <!-- App Icon: 使用簡化版 SVG 編碼，確保 iOS 桌面圖示顯示正常 (白底 + 藍名片 + 置中橘圓 + 文字) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='220' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a'/%3E%3Ccircle cx='256' cy='220' r='40' fill='%23f59e0b'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ffffff'/%3E%3Crect x='126' y='110' width='300' height='220' rx='24' fill='%23cbd5e1' transform='rotate(6 276 210)'/%3E%3Crect x='96' y='126' width='320' height='220' rx='24' fill='%231e3a8a'/%3E%3Ccircle cx='256' cy='220' r='40' fill='%23f59e0b'/%3E%3Ctext x='256' y='460' font-family='sans-serif' font-weight='900' font-size='64' fill='%231e3a8a' text-anchor='middle'%3ESnapCard%3C/text%3E%3C/svg%3E">
 
     <!-- Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -34,7 +33,6 @@
         .hide-scrollbar::-webkit-scrollbar { 
             display: none; 
         }
-        /* 強制影片滿版且最上層 */
         video {
             position: absolute;
             top: 0;
@@ -45,7 +43,6 @@
             z-index: 10;
             transform: scaleX(1);
         }
-        /* 掃描線動畫 */
         @keyframes scan {
             0% { top: 0%; opacity: 0; }
             50% { opacity: 1; }
@@ -79,18 +76,16 @@
 </head>
 <body>
     <div id="root">
-        <!-- 預設靜態啟動畫面 (HTML) - 含動畫 -->
+        <!-- 預設靜態啟動畫面 (HTML) - 含橘色動態掃描線 -->
         <div class="splash-screen">
             <div style="width: 120px; height: 120px; margin-bottom: 24px;">
                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-                    <!-- 名片本體 (白) -->
                     <rect x="86" y="156" width="340" height="200" rx="20" fill="white"/>
-                    <!-- 內容 (淺灰) -->
                     <circle cx="160" cy="256" r="35" fill="#e2e8f0"/>
                     <rect x="230" y="240" width="140" height="16" rx="4" fill="#94a3b8"/>
                     <rect x="230" y="270" width="100" height="12" rx="3" fill="#cbd5e1"/>
                     
-                    <!-- 掃描線 (橘) - 加入上下移動動畫 -->
+                    <!-- 啟動畫面橘色掃描線上下移動動畫 -->
                     <rect x="86" y="156" width="340" height="16" fill="#f97316" opacity="0.8">
                         <animate attributeName="y" values="156;340;156" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" />
                     </rect>
@@ -526,7 +521,7 @@
             const dropdownModels = [...new Set([...baseModels, ...availableModels])].filter(m => !m.includes("1.5"));
 
             if (showSplash) {
-                // React Splash Screen (保持同步：藍底 + 白名片 + 橘線動畫)
+                // [同步修正] React 渲染的啟動畫面也必須是 深藍底 + 白名片 + 橘線動畫
                 return (
                     <div className="fixed inset-0 bg-[#1e3a8a] z-[9999] flex flex-col items-center justify-center" style={{background: 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)'}}>
                         <div style={{ width: '120px', height: '120px', marginBottom: '24px' }}>
@@ -535,7 +530,7 @@
                                 <circle cx="160" cy="256" r="35" fill="#e2e8f0"/>
                                 <rect x="230" y="240" width="140" height="16" rx="4" fill="#94a3b8"/>
                                 <rect x="230" y="270" width="100" height="12" rx="3" fill="#cbd5e1"/>
-                                {/* 動態掃描線 */}
+                                {/* 動態掃描線動畫 */}
                                 <rect x="86" y="156" width="340" height="16" fill="#f97316" opacity="0.8">
                                     <animate attributeName="y" values="156;340;156" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" />
                                 </rect>
@@ -618,7 +613,7 @@
                                         <label className="w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"><span>匯入</span><Icon name="download" size={18}/><input type="file" accept=".json" onChange={importData} className="hidden"/></label>
                                     </div>
                                 </div>
-                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 37.2 (Final Integration)</div>
+                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 38.0 (Corrected Icons & Splash)</div>
                                 <button onClick={()=>setView("home")} className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold mt-4">返回</button>
                             </div>
                         )}
