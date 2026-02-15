@@ -59,7 +59,7 @@
             box-shadow: 0 0 10px #f97316;
             animation: scan 2s linear infinite;
         }
-        /* 啟動畫面樣式：修正為深藍色背景 */
+        /* 啟動畫面樣式：修正為深藍色背景 (CSS) */
         .splash-screen {
             position: fixed;
             top: 0;
@@ -78,19 +78,18 @@
 </head>
 <body>
     <div id="root">
-        <!-- 預設啟動畫面 -->
+        <!-- 預設靜態啟動畫面 (HTML) -->
         <div class="splash-screen">
-            <!-- 修正：啟動畫面 Logo 改為白色名片 (經典款) -->
+            <!-- 經典藍底 Logo (白色名片 + 橘色線) -->
             <div style="width: 120px; height: 120px; margin-bottom: 24px;">
                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
                     <rect x="86" y="156" width="340" height="200" rx="24" fill="white"/>
                     <rect x="86" y="190" width="340" height="16" fill="#f97316"/>
                     <circle cx="160" cy="256" r="35" fill="#cbd5e1"/>
                     <rect x="230" y="240" width="140" height="16" rx="4" fill="#94a3b8"/>
-                    <rect x="230" y="270" width="100" height="12" rx="3" fill="#cbd5e1"/>
+                    <rect x="230" y="270" width="100" height="12" rx="3" fill="#e2e8f0"/>
                 </svg>
             </div>
-            <!-- 修正：文字與標語 (白色字體) -->
             <h1 style="font-size: 32px; font-weight: 900; color: white; font-family: sans-serif; letter-spacing: 1px;">SnapCard</h1>
             <p style="font-size: 14px; color: #cbd5e1; font-family: sans-serif; margin-top: 12px; letter-spacing: 2px; font-weight: 300;">每一次相遇都值得期待</p>
         </div>
@@ -181,7 +180,6 @@
                 }
                 const frameW = sWidth * 0.75, frameH = frameW / 1.6;
                 const frameX = sx + (sWidth - frameW) / 2, frameY = sy + (sHeight - frameH) / 2;
-                
                 const MAX_DIM = 1200; let destW = frameW, destH = frameH;
                 if (destW > MAX_DIM || destH > MAX_DIM) { const scale = Math.min(MAX_DIM / destW, MAX_DIM / destH); destW *= scale; destH *= scale; }
                 c.width = destW; c.height = destH; 
@@ -241,7 +239,6 @@
             const randomInputName = useMemo(() => `s_${Math.random().toString(36).slice(2)}`, []);
 
             useEffect(() => { 
-                // [修正] 使用 removeItem 清除 Key
                 safeLocalStorage.removeItem("snapcard_api_key"); 
                 setTimeout(() => setShowSplash(false), 2000); 
             }, []);
@@ -518,18 +515,18 @@
 
             if (showSplash) {
                 return (
-                    <div className="fixed inset-0 bg-[#ffffff] z-[9999] flex flex-col items-center justify-center">
+                    <div className="fixed inset-0 bg-[#1e3a8a] z-[9999] flex flex-col items-center justify-center" style={{background: 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)'}}>
                         <div style={{ width: '120px', height: '120px', marginBottom: '20px' }}>
                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-                                <rect x="126" y="110" width="300" height="220" rx="24" fill="#cbd5e1" transform="rotate(6 276 210)"/>
-                                <rect x="96" y="126" width="320" height="220" rx="24" fill="#1e3a8a"/>
-                                <circle cx="256" cy="200" r="36" fill="#f59e0b"/>
-                                <rect x="186" y="260" width="140" height="16" rx="8" fill="#ffffff"/>
-                                <rect x="156" y="290" width="200" height="10" rx="5" fill="#64748b"/>
+                                <rect x="86" y="156" width="340" height="200" rx="24" fill="white"/>
+                                <rect x="86" y="190" width="340" height="16" fill="#f97316"/>
+                                <circle cx="160" cy="256" r="35" fill="#cbd5e1"/>
+                                <rect x="230" y="240" width="140" height="16" rx="4" fill="#94a3b8"/>
+                                <rect x="230" y="270" width="100" height="12" rx="3" fill="#e2e8f0"/>
                             </svg>
                         </div>
-                        <h1 style={{fontSize: '24px', fontWeight: '900', color: '#1e3a8a', fontFamily: 'sans-serif'}}>SNAPCARD AI</h1>
-                        <p style={{fontSize: '14px', color: '#64748b', fontFamily: 'sans-serif', marginTop: '8px'}}>人脈，是最好的資產</p>
+                        <h1 style={{fontSize: '32px', fontWeight: '900', color: 'white', fontFamily: 'sans-serif', letterSpacing: '1px'}}>SnapCard</h1>
+                        <p style={{fontSize: '14px', color: '#cbd5e1', fontFamily: 'sans-serif', marginTop: '12px', letterSpacing: '2px', fontWeight: 300}}>每一次相遇都值得期待</p>
                     </div>
                 );
             }
@@ -605,7 +602,7 @@
                                         <label className="w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"><span>匯入</span><Icon name="download" size={18}/><input type="file" accept=".json" onChange={importData} className="hidden"/></label>
                                     </div>
                                 </div>
-                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 30.0 (Splash Fixed)</div>
+                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 31.0 (Sync Fix)</div>
                                 <button onClick={()=>setView("home")} className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold mt-4">返回</button>
                             </div>
                         )}
@@ -678,6 +675,7 @@
                             <div className="flex items-center gap-8 bg-white/90 backdrop-blur-md px-8 py-3 rounded-full shadow-2xl pointer-events-auto border border-gray-100/50">
                                 <button onClick={startScanFlow} className="relative -top-8 group flex flex-col items-center">
                                     <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-full flex items-center justify-center shadow-[0_8px_20px_rgb(37,99,235,0.4)] border-4 border-white group-active:scale-95 transition-all">
+                                        {/* [修正] 掃描按鈕改回經典 scan-line 圖示 */}
                                         <Icon name="scan-line" size={32} className="text-white"/>
                                     </div>
                                     <span className="text-[10px] font-bold text-blue-700 mt-1 absolute -bottom-5">掃描名片</span>
@@ -695,6 +693,7 @@
             );
         }
         
+        // 確保 ErrorBoundary 正確拼寫
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(
             <ErrorBoundary>
