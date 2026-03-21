@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SnapCard AI - 專業人脈管家</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SnapCard">
+    <meta name="theme-color" content="#0a0f1e">
+    <link rel="manifest" href="manifest.json">
+    
+    <link rel="apple-touch-icon-precomposed" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%230a0f1e'/%3E%3Crect x='30' y='45' width='120' height='90' rx='12' fill='%231e3a8a'/%3E%3Ccircle cx='90' cy='90' r='20' fill='%23f59e0b'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0f1e'/%3E%3Crect x='5' y='7' width='22' height='16' rx='2' fill='%231e3a8a'/%3E%3Ccircle cx='16' cy='15' r='3.5' fill='%23f59e0b'/%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --bg: #080c18;
+            --bg2: #0d1424;
+            --surface: #111827;
+            --surface2: #1a2235;
+            --border: rgba(255,255,255,0.07);
+            --border-hover: rgba(255,255,255,0.15);
+            --text: #f0f4ff;
+            --text-2: #94a3b8;
+            --text-3: #475569;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59,130,246,0.3);
+            --orange: #f97316;
+            --orange-glow: rgba(249,115,22,0.25);
+            --green: #10b981;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        video {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; z-index: 10;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .scan-line {
+            position: absolute; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--orange), transparent);
+            box-shadow: 0 0 16px var(--orange), 0 0 32px var(--orange-glow);
+            animation: scan 2s ease-in-out infinite;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+            50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 60px rgba(59,130,246,0.1); }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 30% 20%, #0f1f4a 0%, #080c18 60%);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 99999; transition: opacity 0.6s ease-out;
+        }
+        .splash-noise {
+            position: absolute; inset: 0; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Glass card */
+        .glass {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .glass-strong {
+            background: rgba(255,255,255,0.055);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+        }
+
+        /* Contact card */
+        .contact-card {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+            border: 1px solid var(--border);
+            transition: all 0.25s ease;
+            animation: fadeUp 0.4s ease both;
+        }
+        .contact-card:hover, .contact-card:active {
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        /* Avatar gradient */
+        .avatar-ring {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            padding: 2px; border-radius: 50%;
+        }
+
+        /* Input styles */
+        .input-field {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            color: var(--text);
+            transition: all 0.2s ease;
+            font-family: 'Sora', sans-serif;
+        }
+        .input-field:focus {
+            background: rgba(59,130,246,0.06);
+            border-color: rgba(59,130,246,0.4);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        .input-field::placeholder { color: var(--text-3); }
+
+        /* Category pill */
+        .cat-pill {
+            border: 1px solid var(--border);
+            color: var(--text-2);
+            background: transparent;
+            transition: all 0.2s ease;
+            font-family: 'Sora', sans-serif;
+        }
+        .cat-pill.active {
+            background: rgba(59,130,246,0.15);
+            border-color: rgba(59,130,246,0.5);
+            color: #93c5fd;
+        }
+
+        /* FAB button */
+        .fab-scan {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            box-shadow: 0 8px 32px rgba(37,99,235,0.5), 0 0 0 4px rgba(255,255,255,0.08);
+            transition: all 0.2s ease;
+        }
+        .fab-scan:active { transform: scale(0.93); box-shadow: 0 4px 16px rgba(37,99,235,0.4); }
+
+        .fab-manual {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        .fab-manual:active { transform: scale(0.93); }
+
+        /* Bottom nav */
+        .bottom-nav {
+            background: rgba(10,15,30,0.85);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+        }
+
+        /* Section card */
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        /* Header shimmer */
+        .header-title {
+            background: linear-gradient(90deg, #93c5fd, #f9fafb, #93c5fd);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* Action field row */
+        .field-row {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            transition: border-color 0.2s;
+        }
+        .field-row:focus-within {
+            border-color: rgba(59,130,246,0.35);
+            background: rgba(59,130,246,0.04);
+        }
+
+        /* Scrollbar for result view */
+        .result-scroll { overflow-y: auto; }
+        .result-scroll::-webkit-scrollbar { width: 3px; }
+        .result-scroll::-webkit-scrollbar-track { background: transparent; }
+        .result-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        /* Processing overlay */
+        .processing-overlay {
+            background: rgba(8,12,24,0.95);
+            backdrop-filter: blur(20px);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 48px; height: 48px;
+            border: 3px solid rgba(59,130,246,0.15);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Mono font for api key */
+        .mono { font-family: 'DM Mono', monospace; }
+
+        /* Search box */
+        .search-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .search-box:focus-within {
+            border-color: rgba(59,130,246,0.4);
+            background: rgba(59,130,246,0.05);
+        }
+
+        /* Success/error states */
+        .status-success { color: #34d399; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); }
+        .status-error { color: #f87171; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
+        .status-info { color: #60a5fa; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); }
+
+        /* Empty state */
+        .empty-state { animation: float 3s ease-in-out infinite; }
+
+        /* Alert banner */
+        .api-alert {
+            background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(234,88,12,0.08));
+            border: 1px solid rgba(249,115,22,0.25);
+        }
+
+        /* btn press */
+        button { cursor: pointer; }
+        button:active { opacity: 0.85; }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="splash-screen">
+            <div class="splash-noise"></div>
+            <div style="animation: fadeUp 0.6s ease both; display:flex; flex-direction:column; align-items:center;">
+                <div style="width:96px;height:96px;margin-bottom:28px;animation:float 3s ease-in-out infinite;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+                        <rect x="56" y="136" width="400" height="240" rx="28" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+                        <rect x="72" y="152" width="368" height="208" rx="20" fill="#111827"/>
+                        <circle cx="160" cy="256" r="42" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+                        <circle cx="160" cy="256" r="28" fill="#1e3a8a"/>
+                        <rect x="224" y="232" width="160" height="16" rx="6" fill="rgba(255,255,255,0.15)"/>
+                        <rect x="224" y="264" width="120" height="12" rx="4" fill="rgba(255,255,255,0.08)"/>
+                        <rect x="72" y="152" width="368" height="18" fill="#f97316" opacity="0.85">
+                            <animate attributeName="y" values="152;344;152" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/>
+                            <animate attributeName="opacity" values="0;0.85;0" dur="2s" repeatCount="indefinite"/>
+                        </rect>
+                    </svg>
+                </div>
+                <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.5px;background:linear-gradient(90deg,#93c5fd,#f9fafb,#93c5fd);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite;">SnapCard</div>
+                <div style="font-family:'Sora',sans-serif;font-size:11px;color:#475569;margin-top:10px;letter-spacing:3px;text-transform:uppercase;font-weight:400;">每一次相遇都值得期待</div>
+            </div>
+            <div style="position:absolute;bottom:48px;display:flex;gap:6px;animation:fadeIn 1s 0.5s ease both;opacity:0;">
+                <div style="width:6px;height:6px;border-radius:50%;background:#1e40af;animation:pulseGlow 1.5s ease-in-out infinite;"></div>
+                <div style="width:6px;height:6px;border-radius:50%;background:#2563eb;animation:pulseGlow 1.5s 0.3s ease-in-out infinite;"></div>
+                <div style="width:6px;height:6px;border-radius:50%;background:#3b82f6;animation:pulseGlow 1.5s 0.6s ease-in-out infinite;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        window.onerror = function(message) {
+            const root = document.getElementById('root');
+            if (root) {
+                root.innerHTML = '<div style="padding:20px;text-align:center;color:#f87171;margin-top:50px;font-family:sans-serif;"><h3>應用程式發生錯誤</h3><p style="font-size:12px;color:#64748b;">' + message + '</p><button onclick="localStorage.clear();location.reload()" style="padding:12px 24px;background:#1e3a8a;color:white;border:none;border-radius:8px;margin-top:16px;font-size:14px;">清除資料並重整</button></div>';
+            }
+        };
+    </script>
+    
+    <script type="text/babel">
+        const { useState, useRef, useEffect, useMemo, Component } = React;
+
+        const safeLocalStorage = {
+            getItem: (k) => { try { return localStorage.getItem(k); } catch(e) { return null; } },
+            setItem: (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} },
+            removeItem: (k) => { try { localStorage.removeItem(k); } catch(e) {} }
+        };
+
+        const dbUtils = {
+            open: () => new Promise((res, rej) => { try { const r=indexedDB.open('SnapCardDB',1); r.onupgradeneeded=(e)=>{const d=e.target.result;if(!d.objectStoreNames.contains('cards'))d.createObjectStore('cards',{keyPath:'id'});}; r.onsuccess=(e)=>res(e.target.result); r.onerror=(e)=>rej(e.target.error); } catch(e){rej(e);} }),
+            getAll: async () => { const db=await dbUtils.open(); return new Promise((res,rej)=>{ const tx=db.transaction(['cards'],'readonly'); const req=tx.objectStore('cards').getAll(); req.onsuccess=()=>res(req.result); req.onerror=()=>rej(req.error); }); },
+            put: async (card) => { const db=await dbUtils.open(); return new Promise((res,rej)=>{ const tx=db.transaction(['cards'],'readwrite'); const req=tx.objectStore('cards').put(card); req.onsuccess=()=>res(req.result); req.onerror=()=>rej(req.error); }); },
+            delete: async (id) => { const db=await dbUtils.open(); return new Promise((res,rej)=>{ const tx=db.transaction(['cards'],'readwrite'); const req=tx.objectStore('cards').delete(id); req.onsuccess=()=>res(); req.onerror=()=>rej(req.error); }); },
+        };
+
+        class ErrorBoundary extends Component {
+            constructor(p){super(p);this.state={hasError:false,error:null};}
+            static getDerivedStateFromError(e){return{hasError:true,error:e};}
+            render(){ if(this.state.hasError)return <div style={{height:'100vh',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'16px',color:'#f87171',fontFamily:'sans-serif'}}><h3>App 發生錯誤</h3><p style={{fontSize:'12px',color:'#64748b'}}>{this.state.error?.message}</p><button onClick={()=>{localStorage.clear();window.location.reload()}} style={{background:'#1e3a8a',color:'white',padding:'10px 20px',border:'none',borderRadius:'8px',marginTop:'12px'}}>重置並重整</button></div>; return this.props.children; }
+        }
+
+        const Icon = ({ name, size = 20, className = "", style = {} }) => {
+            const ref = useRef(null);
+            useEffect(() => {
+                if (!ref.current || !window.lucide) return;
+                const container = ref.current;
+                container.innerHTML = '';
+                const i = document.createElement('i');
+                i.setAttribute('data-lucide', name);
+                container.appendChild(i);
+                window.lucide.createIcons({ root: container, attrs: { width: size, height: size, class: className } });
+            }, [name, size, className]);
+            return <span ref={ref} style={{ display:'inline-flex', alignItems:'center', ...style }}></span>;
+        };
+
+        const compressImage = (file) => new Promise((res,rej)=>{
+            if(!file)return rej("No file");
+            const u=URL.createObjectURL(file); const i=new Image(); i.src=u;
+            i.onload=()=>{ URL.revokeObjectURL(u); const c=document.createElement('canvas'); const m=1200; let w=i.width,h=i.height; if(w>h){if(w>m){h*=m/w;w=m;}}else{if(h>m){w*=m/h;h=m;}} c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.drawImage(i,0,0,w,h); res(c.toDataURL('image/jpeg',0.8)); }; i.onerror=rej;
+        });
+
+        // ─── Category color map ───────────────────────────────────────────────
+        const catColors = {
+            "工作-客戶": { bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.35)", text: "#93c5fd", dot: "#3b82f6" },
+            "工作-廠商": { bg: "rgba(168,85,247,0.15)", border: "rgba(168,85,247,0.35)", text: "#c4b5fd", dot: "#a855f7" },
+            "家人":      { bg: "rgba(249,115,22,0.15)", border: "rgba(249,115,22,0.35)", text: "#fdba74", dot: "#f97316" },
+            "朋友":      { bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.35)", text: "#6ee7b7", dot: "#10b981" },
+        };
+        const getCatStyle = (cat) => catColors[cat] || { bg:"rgba(255,255,255,0.05)", border:"rgba(255,255,255,0.1)", text:"#94a3b8", dot:"#64748b" };
+
+        // ─── Avatar initials ──────────────────────────────────────────────────
+        const avatarGradients = [
+            "linear-gradient(135deg,#1e40af,#4f46e5)",
+            "linear-gradient(135deg,#065f46,#0891b2)",
+            "linear-gradient(135deg,#7c2d12,#b91c1c)",
+            "linear-gradient(135deg,#4a044e,#7e22ce)",
+            "linear-gradient(135deg,#064e3b,#0f766e)",
+        ];
+        const getAvatarGrad = (name) => { if(!name) return avatarGradients[0]; const i = name.charCodeAt(0) % avatarGradients.length; return avatarGradients[i]; };
+
+        // ─── Camera Scanner ───────────────────────────────────────────────────
+        const CameraScanner = ({onCapture, onCancel}) => {
+            const vRef = useRef(null);
+            const [error, setError] = useState(null);
+            useEffect(()=>{
+                let s=null;
+                const init=async()=>{ try { s=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1920},height:{ideal:1080}}}); if(vRef.current){vRef.current.srcObject=s;vRef.current.play().catch(console.error);} } catch(e){setError("相機錯誤: "+e.message);} };
+                init(); return ()=>s?.getTracks().forEach(t=>t.stop());
+            },[]);
+            const capture=()=>{ if(!vRef.current)return; const v=vRef.current; const c=document.createElement("canvas"); const vR=v.videoWidth/v.videoHeight,dR=v.clientWidth/v.clientHeight; let sW=v.videoWidth,sH=v.videoHeight,sx=0,sy=0; if(vR>dR){sW=v.videoHeight*dR;sx=(v.videoWidth-sW)/2;}else{sH=v.videoWidth/dR;sy=(v.videoHeight-sH)/2;} const fW=sW*0.75,fH=fW/1.6,fX=sx+(sW-fW)/2,fY=sy+(sH-fH)/2; const M=1200;let dW=fW,dH=fH;if(dW>M||dH>M){const s=Math.min(M/dW,M/dH);dW*=s;dH*=s;} c.width=dW;c.height=dH;c.getContext('2d').drawImage(v,fX,fY,fW,fH,0,0,dW,dH);onCapture(c.toDataURL("image/jpeg",0.8)); };
+            return (
+                <div style={{position:'fixed',inset:0,background:'#000',zIndex:50,display:'flex',flexDirection:'column'}}>
+                    <div style={{flex:1,position:'relative',overflow:'hidden'}}>
+                        <video ref={vRef} playsInline muted autoPlay style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',zIndex:10}}/>
+                        {error && <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',color:'white',background:'rgba(0,0,0,0.8)',zIndex:20,fontSize:'14px',padding:'20px',textAlign:'center'}}>{error}</div>}
+                        <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',zIndex:20,pointerEvents:'none'}}>
+                            <div style={{width:'75%',aspectRatio:'1.6/1',position:'relative'}}>
+                                {/* corner brackets */}
+                                {[['top','left'],['top','right'],['bottom','left'],['bottom','right']].map(([v,h])=>(
+                                    <div key={v+h} style={{position:'absolute',[v]:-2,[h]:-2,width:24,height:24,borderTop:v==='top'?'2px solid #3b82f6':'none',borderBottom:v==='bottom'?'2px solid #3b82f6':'none',borderLeft:h==='left'?'2px solid #3b82f6':'none',borderRight:h==='right'?'2px solid #3b82f6':'none'}}></div>
+                                ))}
+                                <div style={{position:'absolute',inset:0,boxShadow:'0 0 0 999px rgba(0,0,0,0.6)',overflow:'hidden',borderRadius:4}}>
+                                    <div className="scan-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style={{position:'absolute',bottom:'140px',width:'100%',textAlign:'center',zIndex:20}}>
+                            <span style={{padding:'8px 20px',background:'rgba(0,0,0,0.6)',color:'rgba(255,255,255,0.8)',fontSize:'12px',borderRadius:20,letterSpacing:'1px',backdropFilter:'blur(8px)'}}>請將名片置入框內</span>
+                        </div>
+                    </div>
+                    <div style={{background:'rgba(0,0,0,0.9)',height:128,display:'flex',alignItems:'center',justifyContent:'center',gap:48,backdropFilter:'blur(20px)'}}>
+                        <button onClick={onCancel} style={{color:'rgba(255,255,255,0.7)',fontFamily:'Sora,sans-serif',fontSize:'14px',background:'none',border:'none',padding:'12px 20px',fontWeight:600}}>取消</button>
+                        <button onClick={capture} style={{width:68,height:68,borderRadius:'50%',background:'white',border:'4px solid rgba(255,255,255,0.3)',boxShadow:'0 0 0 2px rgba(59,130,246,0.5),0 8px 32px rgba(0,0,0,0.5)',transition:'transform 0.15s'}} onMouseDown={e=>e.currentTarget.style.transform='scale(0.92)'} onMouseUp={e=>e.currentTarget.style.transform='scale(1)'}></button>
+                        <div style={{width:60}}></div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ─── Main App ─────────────────────────────────────────────────────────
+        function App() {
+            const [showSplash, setShowSplash] = useState(true);
+            const [view, setView] = useState("home");
+            const [cards, setCards] = useState([]);
+            const [capturedImage, setCapturedImage] = useState(null);
+            const [backImage, setBackImage] = useState(null);
+            const [currentAvatar, setCurrentAvatar] = useState(null);
+            const [additionalImage, setAdditionalImage] = useState(null);
+            const [isProcessing, setIsProcessing] = useState(false);
+            const [resultData, setResultData] = useState({});
+            const [currentCardId, setCurrentCardId] = useState(null);
+            const [filterCategory, setFilterCategory] = useState("全部");
+            const [searchQuery, setSearchQuery] = useState("");
+            const [apiKey, setApiKey] = useState("");
+            const [selectedModel, setSelectedModel] = useState("");
+            const [availableModels, setAvailableModels] = useState([]);
+            const [testStatus, setTestStatus] = useState("idle");
+            const [testMessage, setTestMessage] = useState("");
+            const [statusMsg, setStatusMsg] = useState("");
+            const [error, setError] = useState(null);
+
+            const randomInputName = useMemo(() => `s_${Math.random().toString(36).slice(2)}`, []);
+
+            useEffect(()=>{ safeLocalStorage.removeItem("snapcard_api_key"); setTimeout(()=>setShowSplash(false),2200); },[]);
+            useEffect(()=>{ dbUtils.getAll().then(d=>setCards(sortCards(d))).catch(()=>{}); },[]);
+            useEffect(()=>{ setTimeout(()=>window.lucide?.createIcons(),150); },[view,cards,resultData]);
+
+            const sortCards = (arr) => [...arr].sort((a,b)=>{
+                const ca=(a.company||"").toLowerCase(), cb=(b.company||"").toLowerCase();
+                if(ca<cb)return -1; if(ca>cb)return 1;
+                const na=(a.name||"").toLowerCase(), nb=(b.name||"").toLowerCase();
+                if(na<nb)return -1; if(na>nb)return 1;
+                return b.id-a.id;
+            });
+
+            const startScanFlow=()=>{ if(!apiKey){setView("settings");return;} setView("scan"); };
+            const handleManualAdd=()=>{ setResultData({category:"工作-客戶"});setCapturedImage(null);setBackImage(null);setCurrentAvatar(null);setAdditionalImage(null);setCurrentCardId(null);setView("result"); };
+            const handleImageUpload=async(e,setter)=>{ if(e.target.files[0]){try{const b=await compressImage(e.target.files[0]);setter(b);}catch{alert("圖片處理失敗");}} };
+            const clearApiKey=()=>{ setApiKey("");setTestStatus("idle");setTestMessage("");setAvailableModels([]);setSelectedModel(""); };
+            const sanitizeKey=(k)=>k.trim().replace(/[\r\n\s]/g,'');
+
+            const fetchWithRetry=async(url,opts)=>{ const delays=[1000,2000]; for(let i=0;i<=delays.length;i++){try{const r=await fetch(url,opts);if(r.status===429)return r;if(!r.ok&&r.status>=500&&i<delays.length){await new Promise(re=>setTimeout(re,delays[i]));continue;}return r;}catch(e){if(i===delays.length)throw e;await new Promise(re=>setTimeout(re,delays[i]));}} };
+
+            const getUsableModels=async(key)=>{ const r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`,{method:'GET'}); if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(`[${r.status}] ${e.error?.message||r.statusText}`);} const d=await r.json(); const u=d.models.filter(m=>m.supportedGenerationMethods?.includes("generateContent")&&m.name.includes("gemini")&&!m.name.includes("1.5")).map(m=>m.name.replace("models/","")); if(u.length===0)throw new Error("此 Key 無法存取 Gemini 2.0/3.0 模型"); return u; };
+
+            const fetchModelsAndTest=async()=>{ if(!apiKey)return setTestMessage("請輸入 Key"); setTestStatus("testing");setTestMessage("正在查詢授權模型..."); try{const k=sanitizeKey(apiKey);const u=await getUsableModels(k);setAvailableModels(u);const b=u.find(m=>m.includes("gemini-3.0"))||u.find(m=>m.includes("gemini-2.0"))||u[0];setSelectedModel(b);setTestStatus("success");setTestMessage(`驗證成功！偵測到：${b}`);}catch(e){setTestStatus("error");setTestMessage(`失敗: ${e.message}`);} };
+
+            const analyze=async(base64)=>{
+                setIsProcessing(true);setError(null);
+                if(!apiKey){setError("請先設定 API Key");setView("settings");setIsProcessing(false);return;}
+                const k=sanitizeKey(apiKey); let mods=availableModels;
+                try{
+                    if(mods.length===0){setStatusMsg("確認授權模型中...");mods=await getUsableModels(k);setAvailableModels(mods);const b=mods.find(m=>m.includes("gemini-3.0"))||mods.find(m=>m.includes("gemini-2.0"))||mods[0];setSelectedModel(b);}
+                    const target=selectedModel||mods.find(m=>m.includes("gemini-3.0"))||mods.find(m=>m.includes("gemini-2.0"))||mods[0];
+                    let toTry=[]; if(target&&mods.includes(target))toTry.push(target); const sorted=[...mods].sort((a,b)=>(b.includes("3.0")?3:b.includes("2.0")?2:0)-(a.includes("3.0")?3:a.includes("2.0")?2:0)); sorted.forEach(m=>{if(!toTry.includes(m))toTry.push(m);});
+                    const prompt=`分析名片回傳JSON:{"name":"","jobTitle":"","company":"","mobile":"","tel":"","fax":"","email":"","address":"","category":"工作-客戶","note":""}。規則:1.分mobile/tel/fax 2.company合併中英 3.category[工作-客戶,工作-廠商,家人,朋友]。無Markdown。`;
+                    const imgPart={inlineData:{mimeType:"image/jpeg",data:base64.split(',')[1]}};
+                    let lastErr="",ok=null;
+                    for(const model of toTry){
+                        setStatusMsg(`AI 辨識中…`);
+                        try{const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${k}`;const r=await fetchWithRetry(url,{method:"POST",headers:{"Content-Type":"application/json"},referrerPolicy:"no-referrer",body:JSON.stringify({contents:[{parts:[{text:prompt},imgPart]}]})});if(!r.ok){const e=await r.json().catch(()=>({}));const msg=e.error?.message||r.statusText;if(r.status===400&&(msg.includes("API key")||msg.includes("INVALID_ARGUMENT")))throw new Error("API Key 無效");lastErr=`[${r.status}] ${msg}`;continue;}const j=await r.json();let t=j.candidates?.[0]?.content?.parts?.[0]?.text;if(!t){lastErr="模型回傳空白";continue;}t=t.replace(/```json|```/g,'').trim();const s=t.indexOf('{'),e=t.lastIndexOf('}');ok=JSON.parse(t.substring(s,e+1));break;}catch(e){if(e.message.includes("API Key"))throw e;lastErr=e.message;}
+                    }
+                    if(!ok)throw new Error(`連線失敗 (${lastErr})`);
+                    setResultData(ok||{category:"工作-客戶"});setBackImage(null);setAdditionalImage(null);setCurrentAvatar(null);setCurrentCardId(null);setView("result");
+                }catch(e){setError(`辨識失敗: ${e.message}`);setView("home");}finally{setIsProcessing(false);}
+            };
+
+            const saveCard=async()=>{ const d={id:currentCardId||Date.now(),...resultData,image:capturedImage,backImage,avatar:currentAvatar,additionalImage,category:resultData.category||"工作-客戶"};await dbUtils.put(d);const all=await dbUtils.getAll();setCards(sortCards(all));setView("home"); };
+            const handleDeleteCard=async(id,e)=>{ e.stopPropagation();if(confirm("確定刪除這張名片？")){await dbUtils.delete(id);setCards(prev=>prev.filter(c=>c.id!==id));} };
+
+            const downloadVcf=()=>{ const c=resultData;let v="BEGIN:VCARD\nVERSION:3.0\n";let dn=c.name||"未命名";if(c.company)dn=`${c.company} ${dn}`;v+=`FN:${dn}\nN:${dn};;;;\n`;if(c.company)v+=`ORG:${c.company};\n`;if(c.jobTitle)v+=`TITLE:${c.jobTitle}\n`;if(c.mobile)v+=`TEL;type=CELL:${c.mobile}\n`;if(c.tel)v+=`TEL;type=WORK:${c.tel}\n`;if(c.fax)v+=`TEL;type=FAX:${c.fax}\n`;if(c.email)v+=`EMAIL;type=INTERNET;type=WORK:${c.email}\n`;if(c.address)v+=`ADR;type=WORK:;;${c.address};;;;\n`;let ns=[];if(c.category)ns.push(`分類: ${c.category}`);if(c.note)ns.push(c.note);if(ns.length)v+=`NOTE:${ns.join(' | ')}\n`;v+="END:VCARD\n";const b=new Blob([v],{type:'text/vcard'});const a=document.createElement('a');a.download=`${dn}.vcf`;a.href=URL.createObjectURL(b);document.body.appendChild(a);a.click();document.body.removeChild(a); };
+            const exportData=()=>{ const b=new Blob([JSON.stringify(cards,null,2)],{type:"application/json"});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download="snapcard_backup.json";a.click(); };
+            const importData=(e)=>{ const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async(ev)=>{try{const d=JSON.parse(ev.target.result);for(const c of d)await dbUtils.put(c);const all=await dbUtils.getAll();setCards(sortCards(all));alert("匯入成功");}catch{alert("格式錯誤");}};r.readAsText(f);e.target.value=''; };
+
+            const baseModels=["gemini-3.0-flash","gemini-3.0-pro","gemini-2.0-flash","gemini-2.0-flash-exp"];
+            const dropdownModels=[...new Set([...baseModels,...availableModels])].filter(m=>!m.includes("1.5"));
+
+            const filteredCards = cards.filter(c =>
+                (filterCategory==="全部"||c.category===filterCategory) &&
+                (!searchQuery||(c.name?.includes(searchQuery)||c.company?.includes(searchQuery)||c.email?.includes(searchQuery)))
+            );
+
+            // ── Splash ──────────────────────────────────────────────────────────
+            if(showSplash) return (
+                <div style={{position:'fixed',inset:0,background:'radial-gradient(ellipse at 30% 20%,#0f1f4a 0%,#080c18 60%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',zIndex:9999}}>
+                    <div style={{animation:'fadeUp 0.6s ease both',display:'flex',flexDirection:'column',alignItems:'center'}}>
+                        <div style={{width:96,height:96,marginBottom:28,animation:'float 3s ease-in-out infinite'}}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+                                <rect x="56" y="136" width="400" height="240" rx="28" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.15)" strokeWidth="2"/>
+                                <rect x="72" y="152" width="368" height="208" rx="20" fill="#111827"/>
+                                <circle cx="160" cy="256" r="42" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" strokeWidth="2"/>
+                                <circle cx="160" cy="256" r="28" fill="#1e3a8a"/>
+                                <rect x="224" y="232" width="160" height="16" rx="6" fill="rgba(255,255,255,0.15)"/>
+                                <rect x="224" y="264" width="120" height="12" rx="4" fill="rgba(255,255,255,0.08)"/>
+                                <rect x="72" y="152" width="368" height="18" fill="#f97316" opacity="0.85">
+                                    <animate attributeName="y" values="152;344;152" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/>
+                                    <animate attributeName="opacity" values="0;0.85;0" dur="2s" repeatCount="indefinite"/>
+                                </rect>
+                            </svg>
+                        </div>
+                        <div style={{fontFamily:'Sora,sans-serif',fontSize:28,fontWeight:800,background:'linear-gradient(90deg,#93c5fd,#f9fafb,#93c5fd)',backgroundSize:'200% auto',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',animation:'shimmer 3s linear infinite',letterSpacing:'-0.5px'}}>SnapCard</div>
+                        <div style={{fontFamily:'Sora,sans-serif',fontSize:11,color:'#334155',marginTop:10,letterSpacing:'3px',textTransform:'uppercase'}}>每一次相遇都值得期待</div>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div style={{maxWidth:428,margin:'0 auto',height:'100svh',background:'var(--bg)',display:'flex',flexDirection:'column',position:'relative',overflow:'hidden'}}>
+                    
+                    {/* ── Header ── */}
+                    <header style={{padding:'52px 20px 14px',background:'rgba(8,12,24,0.9)',backdropFilter:'blur(20px)',borderBottom:'1px solid var(--border)',display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0,zIndex:10}}>
+                        <div>
+                            <div className="header-title" style={{fontSize:20,lineHeight:1}}>SNAPCARD</div>
+                            <div style={{fontSize:11,color:'var(--text-3)',marginTop:3,fontWeight:400,letterSpacing:'0.5px'}}>
+                                {cards.length > 0 ? `${cards.length} 張名片` : '人脈管家'}
+                            </div>
+                        </div>
+                        <button onClick={()=>setView("settings")} style={{width:38,height:38,borderRadius:12,background:'rgba(255,255,255,0.05)',border:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center',color:'#64748b',transition:'all 0.2s'}} onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.09)';e.currentTarget.style.color='#94a3b8';}} onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.05)';e.currentTarget.style.color='#64748b';}}>
+                            <Icon name="settings" size={17}/>
+                        </button>
+                    </header>
+
+                    {/* ── Main ── */}
+                    <main style={{flex:1,overflowY:'auto',padding:'0 0 100px',position:'relative'}} className="hide-scrollbar">
+                        {error && (
+                            <div style={{margin:'12px 16px 0',padding:'12px 16px',background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.25)',borderRadius:12,color:'#f87171',fontSize:12,fontWeight:600,lineHeight:1.5}}>{error}</div>
+                        )}
+
+                        {/* ── HOME ── */}
+                        {view==="home" && (
+                            <div style={{padding:'16px 16px 0'}}>
+                                {!apiKey && (
+                                    <div onClick={()=>setView("settings")} className="api-alert" style={{borderRadius:14,padding:'14px 18px',marginBottom:16,display:'flex',alignItems:'center',gap:12,cursor:'pointer'}}>
+                                        <span style={{fontSize:18}}>⚡</span>
+                                        <div>
+                                            <div style={{fontSize:13,fontWeight:700,color:'#fdba74'}}>需要設定 API Key</div>
+                                            <div style={{fontSize:11,color:'#f97316',opacity:0.7,marginTop:2}}>點此前往設定</div>
+                                        </div>
+                                        <Icon name="chevron-right" size={16} style={{marginLeft:'auto',color:'#f97316',opacity:0.6}}/>
+                                    </div>
+                                )}
+                                
+                                {/* Search */}
+                                <div className="search-box" style={{borderRadius:14,display:'flex',alignItems:'center',padding:'0 14px',marginBottom:14,height:46}}>
+                                    <Icon name="search" size={15} style={{color:'#475569',marginRight:10,flexShrink:0}}/>
+                                    <input type="text" placeholder="搜尋姓名、公司、Email…" value={searchQuery} onChange={e=>setSearchQuery(e.target.value)} style={{flex:1,background:'transparent',border:'none',outline:'none',color:'var(--text)',fontSize:14,fontFamily:'Sora,sans-serif'}}/>
+                                    {searchQuery && <button onClick={()=>setSearchQuery("")} style={{background:'none',border:'none',color:'#475569',display:'flex',alignItems:'center',padding:4}}><Icon name="x" size={14}/></button>}
+                                </div>
+
+                                {/* Category filter */}
+                                <div style={{display:'flex',gap:8,overflowX:'auto',paddingBottom:14,marginBottom:4}} className="hide-scrollbar">
+                                    {["全部","工作-客戶","工作-廠商","家人","朋友"].map(c=>{
+                                        const cs=getCatStyle(c);
+                                        const isActive=filterCategory===c;
+                                        return(
+                                            <button key={c} onClick={()=>setFilterCategory(c)} style={{padding:'6px 14px',borderRadius:20,fontSize:12,fontWeight:600,whiteSpace:'nowrap',fontFamily:'Sora,sans-serif',flexShrink:0,background:isActive?cs.bg:'transparent',border:isActive?`1px solid ${cs.border}`:'1px solid var(--border)',color:isActive?cs.text:'var(--text-3)',transition:'all 0.2s'}}>
+                                                {c==="全部"?`全部 (${cards.length})`:c}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Cards list */}
+                                {filteredCards.length===0 ? (
+                                    <div style={{textAlign:'center',padding:'60px 20px',display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
+                                        <div className="empty-state" style={{width:64,height:64,borderRadius:20,background:'rgba(255,255,255,0.04)',border:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                            <Icon name="credit-card" size={28} style={{color:'var(--text-3)'}}/>
+                                        </div>
+                                        <div>
+                                            <div style={{fontSize:15,fontWeight:700,color:'#475569',marginBottom:6}}>{searchQuery?'找不到符合的名片':'還沒有名片'}</div>
+                                            <div style={{fontSize:12,color:'#334155'}}>{searchQuery?'試試其他關鍵字':'掃描或手動新增你的第一張名片'}</div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                                        {filteredCards.map((c,idx) => {
+                                            const cs=getCatStyle(c.category);
+                                            return(
+                                                <div key={c.id} className="contact-card" style={{borderRadius:16,padding:'14px 16px',display:'flex',alignItems:'center',gap:14,cursor:'pointer',animationDelay:`${idx*0.04}s`}}
+                                                    onClick={()=>{setResultData(c);setCapturedImage(c.image);setBackImage(c.backImage);setCurrentAvatar(c.avatar);setAdditionalImage(c.additionalImage);setCurrentCardId(c.id);setView("result");}}>
+                                                    {/* Avatar */}
+                                                    {c.avatar ? (
+                                                        <div style={{width:48,height:48,borderRadius:14,overflow:'hidden',flexShrink:0}}>
+                                                            <img src={c.avatar} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{width:48,height:48,borderRadius:14,background:getAvatarGrad(c.name),display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,fontWeight:800,color:'rgba(255,255,255,0.9)',flexShrink:0,fontFamily:'Sora,sans-serif'}}>
+                                                            {(c.name||"?")[0]}
+                                                        </div>
+                                                    )}
+                                                    {/* Info */}
+                                                    <div style={{flex:1,minWidth:0}}>
+                                                        <div style={{fontWeight:700,fontSize:15,color:'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:'Sora,sans-serif'}}>{c.name||'未命名'}</div>
+                                                        <div style={{fontSize:12,color:'var(--text-2)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',marginTop:2}}>{[c.jobTitle,c.company].filter(Boolean).join(' · ')}</div>
+                                                        {/* Category tag */}
+                                                        <div style={{marginTop:6,display:'inline-flex',alignItems:'center',gap:5,background:cs.bg,border:`1px solid ${cs.border}`,borderRadius:6,padding:'2px 8px'}}>
+                                                            <div style={{width:5,height:5,borderRadius:'50%',background:cs.dot,flexShrink:0}}></div>
+                                                            <span style={{fontSize:10,fontWeight:600,color:cs.text,fontFamily:'Sora,sans-serif'}}>{c.category||'未分類'}</span>
+                                                        </div>
+                                                    </div>
+                                                    {/* Delete */}
+                                                    <button onClick={(e)=>handleDeleteCard(c.id,e)} style={{width:32,height:32,borderRadius:10,background:'rgba(255,255,255,0.04)',border:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center',color:'#334155',transition:'all 0.2s',flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.background='rgba(239,68,68,0.12)';e.currentTarget.style.color='#f87171';e.currentTarget.style.borderColor='rgba(239,68,68,0.3)';}} onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.color='#334155';e.currentTarget.style.borderColor='var(--border)';}}>
+                                                        <Icon name="trash-2" size={14}/>
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ── SETTINGS ── */}
+                        {view==="settings" && (
+                            <div style={{padding:'16px 16px 0',display:'flex',flexDirection:'column',gap:16}}>
+                                {/* API Card */}
+                                <div className="section-card" style={{borderRadius:20,padding:'20px'}}>
+                                    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:20}}>
+                                        <div style={{width:36,height:36,borderRadius:10,background:'rgba(59,130,246,0.15)',border:'1px solid rgba(59,130,246,0.25)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                            <Icon name="key" size={16} style={{color:'#60a5fa'}}/>
+                                        </div>
+                                        <div>
+                                            <div style={{fontSize:15,fontWeight:700,color:'var(--text)',fontFamily:'Sora,sans-serif'}}>API 設定</div>
+                                            <div style={{fontSize:11,color:'var(--text-3)'}}>Google Gemini API</div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* hidden honeypot */}
+                                    <div style={{height:0,overflow:'hidden'}}><input type="text"/><input type="password"/></div>
+                                    
+                                    <div style={{marginBottom:12}}>
+                                        <label style={{fontSize:11,color:'var(--text-3)',display:'block',marginBottom:8,letterSpacing:'0.5px',fontWeight:600}}>GOOGLE API KEY</label>
+                                        <div style={{position:'relative'}}>
+                                            <input type="password" autoComplete="new-password" readOnly onFocus={e=>e.target.removeAttribute('readonly')} name={randomInputName} value={apiKey} onChange={e=>setApiKey(e.target.value)} className="input-field mono" style={{width:'100%',borderRadius:12,padding:'12px 44px 12px 14px',fontSize:13,display:'block'}} placeholder="AIzaSy..."/>
+                                            {apiKey && (
+                                                <button onClick={clearApiKey} style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',color:'#475569',display:'flex',padding:4}}>
+                                                    <Icon name="x" size={15}/>
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div style={{fontSize:10,color:'#334155',marginTop:8,paddingLeft:2}}>✦ 貼上 Key 即可直接返回首頁掃描</div>
+                                    </div>
+
+                                    {availableModels.length>0 && (
+                                        <div style={{marginBottom:14}}>
+                                            <label style={{fontSize:11,color:'var(--text-3)',display:'block',marginBottom:8,letterSpacing:'0.5px',fontWeight:600}}>AI 模型</label>
+                                            <select value={selectedModel} onChange={e=>setSelectedModel(e.target.value)} className="input-field" style={{width:'100%',borderRadius:12,padding:'12px 14px',fontSize:13,cursor:'pointer'}}>
+                                                {dropdownModels.map(m=><option key={m} value={m}>{m}</option>)}
+                                            </select>
+                                        </div>
+                                    )}
+
+                                    <div style={{display:'flex',gap:10}}>
+                                        <button onClick={fetchModelsAndTest} disabled={testStatus==="testing"} style={{flex:1,padding:'11px',borderRadius:12,fontSize:13,fontWeight:700,fontFamily:'Sora,sans-serif',background:testStatus==="success"?'rgba(16,185,129,0.12)':testStatus==="error"?'rgba(239,68,68,0.12)':'rgba(59,130,246,0.12)',border:`1px solid ${testStatus==="success"?'rgba(16,185,129,0.25)':testStatus==="error"?'rgba(239,68,68,0.25)':'rgba(59,130,246,0.25)'}`,color:testStatus==="success"?'#34d399':testStatus==="error"?'#f87171':'#60a5fa',cursor:'pointer'}}>
+                                            {testStatus==="testing"?"偵測中…":testStatus==="success"?"✓ 偵測成功":"偵測模型"}
+                                        </button>
+                                        <button onClick={()=>window.open("https://aistudio.google.com/app/apikey")} style={{flex:1,padding:'11px',borderRadius:12,fontSize:13,fontWeight:700,fontFamily:'Sora,sans-serif',background:'rgba(255,255,255,0.05)',border:'1px solid var(--border)',color:'var(--text-2)',cursor:'pointer'}}>
+                                            取得 Key ↗
+                                        </button>
+                                    </div>
+                                    {testMessage && (
+                                        <div style={{marginTop:10,padding:'10px 12px',borderRadius:10,fontSize:12,fontWeight:500,...(testStatus==="error"?{color:'#f87171',background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.2)'}:{color:'#34d399',background:'rgba(16,185,129,0.1)',border:'1px solid rgba(16,185,129,0.2)'})}}>
+                                            {testMessage}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Data Card */}
+                                <div className="section-card" style={{borderRadius:20,padding:'20px'}}>
+                                    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+                                        <div style={{width:36,height:36,borderRadius:10,background:'rgba(168,85,247,0.15)',border:'1px solid rgba(168,85,247,0.25)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                            <Icon name="database" size={16} style={{color:'#c084fc'}}/>
+                                        </div>
+                                        <div>
+                                            <div style={{fontSize:15,fontWeight:700,color:'var(--text)',fontFamily:'Sora,sans-serif'}}>資料管理</div>
+                                            <div style={{fontSize:11,color:'var(--text-3)'}}>{cards.length} 張名片</div>
+                                        </div>
+                                    </div>
+                                    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                                        <button onClick={exportData} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'13px 14px',background:'rgba(255,255,255,0.03)',border:'1px solid var(--border)',borderRadius:12,color:'var(--text-2)',fontSize:13,fontWeight:600,fontFamily:'Sora,sans-serif',cursor:'pointer'}}>
+                                            <span>匯出備份 (JSON)</span>
+                                            <Icon name="upload" size={16}/>
+                                        </button>
+                                        <label style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'13px 14px',background:'rgba(255,255,255,0.03)',border:'1px solid var(--border)',borderRadius:12,color:'var(--text-2)',fontSize:13,fontWeight:600,fontFamily:'Sora,sans-serif',cursor:'pointer'}}>
+                                            <span>匯入資料</span>
+                                            <Icon name="download" size={16}/>
+                                            <input type="file" accept=".json" onChange={importData} style={{display:'none'}}/>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div style={{textAlign:'center',fontSize:10,color:'#1e293b',letterSpacing:'1px',paddingTop:4}}>SnapCard · Version 38.3</div>
+
+                                <button onClick={()=>setView("home")} style={{width:'100%',padding:'14px',borderRadius:14,fontWeight:700,fontSize:14,fontFamily:'Sora,sans-serif',background:'rgba(255,255,255,0.06)',border:'1px solid var(--border)',color:'var(--text-2)',cursor:'pointer',marginBottom:16}}>
+                                    ← 返回
+                                </button>
+                            </div>
+                        )}
+
+                        {/* ── SCAN ── */}
+                        {view==="scan" && <CameraScanner onCapture={b=>{setCapturedImage(b);setView("home");analyze(b);}} onCancel={()=>setView("home")}/>}
+
+                        {/* ── RESULT ── */}
+                        {view==="result" && (
+                            <div style={{display:'flex',flexDirection:'column',minHeight:'100%'}}>
+                                {/* Card image preview */}
+                                <div style={{background:'rgba(0,0,0,0.5)',position:'relative',minHeight:capturedImage?0:120,borderBottom:'1px solid var(--border)'}}>
+                                    {capturedImage
+                                        ? <img src={capturedImage} style={{width:'100%',maxHeight:220,objectFit:'contain',display:'block'}}/>
+                                        : <div style={{height:120,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-3)',fontSize:12}}>無名片影像</div>
+                                    }
+                                    <label style={{position:'absolute',bottom:10,right:10,width:34,height:34,borderRadius:10,background:'rgba(0,0,0,0.6)',border:'1px solid rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',backdropFilter:'blur(8px)'}}>
+                                        <Icon name="camera" size={15} style={{color:'white'}}/>
+                                        <input type="file" accept="image/*" style={{display:'none'}} onChange={e=>handleImageUpload(e,setCapturedImage)}/>
+                                    </label>
+                                </div>
+
+                                <div style={{padding:'20px 16px',flex:1,display:'flex',flexDirection:'column',gap:16}}>
+                                    {/* Profile row */}
+                                    <div style={{display:'flex',gap:14,alignItems:'flex-start'}}>
+                                        {/* Avatar */}
+                                        <div style={{position:'relative',flexShrink:0}}>
+                                            {currentAvatar
+                                                ? <img src={currentAvatar} style={{width:64,height:64,borderRadius:16,objectFit:'cover',border:'2px solid var(--border)'}}/>
+                                                : <div style={{width:64,height:64,borderRadius:16,background:getAvatarGrad(resultData.name),display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,fontWeight:800,color:'rgba(255,255,255,0.9)',fontFamily:'Sora,sans-serif'}}>{(resultData.name||"?")[0]}</div>
+                                            }
+                                            <label style={{position:'absolute',bottom:-6,right:-6,width:24,height:24,borderRadius:8,background:'var(--surface2)',border:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
+                                                <Icon name="edit-2" size={11} style={{color:'var(--text-2)'}}/>
+                                                <input type="file" accept="image/*" style={{display:'none'}} onChange={e=>handleImageUpload(e,setCurrentAvatar)}/>
+                                            </label>
+                                        </div>
+                                        {/* Name & title inputs */}
+                                        <div style={{flex:1,display:'flex',flexDirection:'column',gap:8}}>
+                                            <input type="text" value={resultData.name||""} onChange={e=>setResultData({...resultData,name:e.target.value})} placeholder="姓名" style={{background:'transparent',border:'none',borderBottom:'1px solid var(--border)',color:'var(--text)',fontSize:20,fontWeight:800,padding:'4px 0',outline:'none',fontFamily:'Sora,sans-serif',width:'100%'}}/>
+                                            <input type="text" value={resultData.jobTitle||""} onChange={e=>setResultData({...resultData,jobTitle:e.target.value})} placeholder="職稱" style={{background:'transparent',border:'none',borderBottom:'1px solid var(--border)',color:'var(--text-2)',fontSize:13,padding:'4px 0',outline:'none',fontFamily:'Sora,sans-serif',width:'100%'}}/>
+                                        </div>
+                                    </div>
+
+                                    {/* Fields */}
+                                    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                                        {[
+                                            {k:"company",i:"building-2",p:"公司名稱"},
+                                            {k:"mobile",i:"smartphone",p:"手機"},
+                                            {k:"tel",i:"phone",p:"電話"},
+                                            {k:"fax",i:"printer",p:"傳真"},
+                                            {k:"email",i:"at-sign",p:"Email"},
+                                            {k:"address",i:"map-pin",p:"地址"},
+                                        ].map(f=>{
+                                            const val=resultData[f.k];
+                                            let href=null,target="";
+                                            if(val){
+                                                if(['mobile','tel','fax'].includes(f.k)) href=`tel:${val.replace(/[^0-9+]/g,'')}`;
+                                                else if(f.k==='email') href=`mailto:${val}`;
+                                                else if(f.k==='address'){href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(val)}`;target="_blank";}
+                                            }
+                                            return(
+                                                <div key={f.k} className="field-row" style={{borderRadius:12,padding:'10px 14px',display:'flex',alignItems:'center',gap:12}}>
+                                                    {href
+                                                        ? <a href={href} target={target} style={{display:'flex',alignItems:'center',color:'#60a5fa',flexShrink:0,padding:'2px'}}><Icon name={f.i} size={16}/></a>
+                                                        : <span style={{display:'inline-flex',alignItems:'center',color:'#334155',flexShrink:0}}><Icon name={f.i} size={16}/></span>
+                                                    }
+                                                    <input type="text" value={resultData[f.k]||""} onChange={e=>setResultData({...resultData,[f.k]:e.target.value})} placeholder={f.p} style={{flex:1,background:'transparent',border:'none',outline:'none',color:'var(--text)',fontSize:13,fontFamily:'Sora,sans-serif',minWidth:0}}/>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* Category */}
+                                    <div>
+                                        <div style={{fontSize:11,color:'var(--text-3)',marginBottom:8,fontWeight:600,letterSpacing:'0.5px'}}>分類</div>
+                                        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+                                            {["工作-客戶","工作-廠商","家人","朋友"].map(c=>{
+                                                const cs=getCatStyle(c); const isActive=resultData.category===c;
+                                                return(
+                                                    <button key={c} onClick={()=>setResultData({...resultData,category:c})} style={{padding:'10px',borderRadius:10,fontSize:12,fontWeight:700,fontFamily:'Sora,sans-serif',border:isActive?`1px solid ${cs.border}`:'1px solid var(--border)',background:isActive?cs.bg:'rgba(255,255,255,0.02)',color:isActive?cs.text:'var(--text-3)',display:'flex',alignItems:'center',justifyContent:'center',gap:6,transition:'all 0.2s',cursor:'pointer'}}>
+                                                        {isActive && <div style={{width:6,height:6,borderRadius:'50%',background:cs.dot}}></div>}
+                                                        {c}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Note */}
+                                    <textarea value={resultData.note||""} onChange={e=>setResultData({...resultData,note:e.target.value})} placeholder="備註…" rows={3} style={{background:'rgba(255,255,255,0.03)',border:'1px solid var(--border)',borderRadius:12,padding:'12px 14px',color:'var(--text)',fontSize:13,fontFamily:'Sora,sans-serif',resize:'none',outline:'none',width:'100%',boxSizing:'border-box',lineHeight:1.6}}/>
+
+                                    {/* Additional photo */}
+                                    <div onClick={()=>document.getElementById('au_img').click()} style={{borderRadius:14,border:'1px dashed var(--border)',background:'rgba(255,255,255,0.02)',aspectRatio:'21/9',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',overflow:'hidden',position:'relative'}}>
+                                        {additionalImage ? <img src={additionalImage} style={{width:'100%',height:'100%',objectFit:'cover'}}/> : <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:8,color:'var(--text-3)'}}><Icon name="image" size={20}/><span style={{fontSize:11}}>附件照片（名片背面等）</span></div>}
+                                        <input id="au_img" type="file" style={{display:'none'}} onChange={e=>handleImageUpload(e,setAdditionalImage)}/>
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div style={{display:'flex',flexDirection:'column',gap:10,paddingBottom:24}}>
+                                        <button onClick={downloadVcf} style={{width:'100%',padding:'13px',borderRadius:14,fontWeight:700,fontSize:14,fontFamily:'Sora,sans-serif',background:'rgba(16,185,129,0.1)',border:'1px solid rgba(16,185,129,0.25)',color:'#34d399',display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer'}}>
+                                            <Icon name="contact" size={17}/> 加入通訊錄 (.vcf)
+                                        </button>
+                                        <div style={{display:'flex',gap:10}}>
+                                            <button onClick={()=>setView("home")} style={{flex:1,padding:'13px',borderRadius:14,fontWeight:700,fontSize:14,fontFamily:'Sora,sans-serif',background:'rgba(255,255,255,0.05)',border:'1px solid var(--border)',color:'var(--text-2)',cursor:'pointer'}}>取消</button>
+                                            <button onClick={saveCard} style={{flex:2,padding:'13px',borderRadius:14,fontWeight:700,fontSize:14,fontFamily:'Sora,sans-serif',background:'linear-gradient(135deg,#2563eb,#4f46e5)',border:'none',color:'white',cursor:'pointer',boxShadow:'0 4px 20px rgba(37,99,235,0.35)'}}>
+                                                儲存名片
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ── Processing overlay ── */}
+                        {isProcessing && (
+                            <div className="processing-overlay" style={{position:'fixed',inset:0,zIndex:60,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:20}}>
+                                <div style={{width:64,height:64,borderRadius:20,background:'rgba(59,130,246,0.1)',border:'1px solid rgba(59,130,246,0.2)',display:'flex',alignItems:'center',justifyContent:'center',animation:'pulseGlow 2s ease-in-out infinite'}}>
+                                    <div className="spinner"></div>
+                                </div>
+                                <div style={{textAlign:'center'}}>
+                                    <div style={{fontSize:15,fontWeight:700,color:'var(--text)',fontFamily:'Sora,sans-serif',animation:'fadeIn 0.5s ease'}}>{statusMsg||"AI 辨識中…"}</div>
+                                    <div style={{fontSize:11,color:'var(--text-3)',marginTop:6}}>請稍候</div>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* ── Bottom FAB ── */}
+                    {view==="home" && (
+                        <div style={{position:'absolute',bottom:0,left:0,width:'100%',display:'flex',justifyContent:'center',padding:'0 0 28px',zIndex:20,pointerEvents:'none'}}>
+                            <div className="bottom-nav" style={{display:'flex',alignItems:'center',gap:20,padding:'12px 24px',borderRadius:32,pointerEvents:'auto'}}>
+                                {/* Manual add */}
+                                <button onClick={handleManualAdd} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:5,background:'none',border:'none',padding:'4px 8px',cursor:'pointer'}}>
+                                    <div className="fab-manual" style={{width:44,height:44,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-2)'}}>
+                                        <Icon name="pen-tool" size={19}/>
+                                    </div>
+                                    <span style={{fontSize:10,fontWeight:600,color:'var(--text-3)',fontFamily:'Sora,sans-serif',letterSpacing:'0.3px'}}>手動輸入</span>
+                                </button>
+                                
+                                {/* Scan button */}
+                                <button onClick={startScanFlow} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6,background:'none',border:'none',padding:'4px 8px',cursor:'pointer',marginTop:-20}}>
+                                    <div className="fab-scan" style={{width:68,height:68,borderRadius:22,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                        <Icon name="scan-line" size={30} style={{color:'white'}}/>
+                                    </div>
+                                    <span style={{fontSize:10,fontWeight:700,color:'#60a5fa',fontFamily:'Sora,sans-serif',letterSpacing:'0.3px'}}>掃描名片</span>
+                                </button>
+
+                                {/* Search / list view placeholder */}
+                                <button onClick={()=>{}} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:5,background:'none',border:'none',padding:'4px 8px',cursor:'pointer',opacity:0.4}} disabled>
+                                    <div className="fab-manual" style={{width:44,height:44,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-2)'}}>
+                                        <Icon name="grid-2x2" size={19}/>
+                                    </div>
+                                    <span style={{fontSize:10,fontWeight:600,color:'var(--text-3)',fontFamily:'Sora,sans-serif',letterSpacing:'0.3px'}}>即將推出</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ErrorBoundary><App/></ErrorBoundary>);
+    </script>
+</body>
+</html>
