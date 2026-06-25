@@ -162,12 +162,24 @@
             const clearApiKey = () => { setApiKey(""); safeLocalStorage.removeItem("snapcard_api_key"); setTestStatus("idle"); setTestMessage(""); setAvailableModels([]); setSelectedModel(""); };
             const sanitizeKey = (k) => k.trim().replace(/[\r\n\s]/g, '');
 
+            const fetchWithRetry = async (url, options) => {
+                const delays = [1000, 2000]; 
+                for (let i = 0; i <= delays.length; i++) {
+                    try {
+                        const res = await fetch(url, options); if (res.status === 429) return res; 
+                        if (!res.ok && res.status >= 500 && i < delays.length) { await new Promise(r => setTimeout(r, delays[i])); continue; }
+                        return res; 
+                    } catch (err) { if (i === delays.length) throw err; await new Promise(r => setTimeout(r, delays[i])); }
+                }
+            };
+
             const getUsableModels = async (cleanKey) => {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`;
-                const res = await fetch(url, { method: 'GET' });
+                const res = await fetchWithRetry(url, { method: 'GET' });
                 if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(`[${res.status}] ${err.error?.message || res.statusText}`); }
                 const data = await res.json();
                 const usable = data.models.filter(m => m.supportedGenerationMethods?.includes("generateContent") && m.name.includes("gemini") && !m.name.includes("1.5")).map(m => m.name.replace("models/", ""));
+                if (usable.length === 0) throw new Error("此 Key 無法存取 Gemini 2.0/3.0 模型");
                 return usable;
             };
 
@@ -176,51 +188,49 @@
                 setTestStatus("testing"); setTestMessage("正在查詢您的授權模型...");
                 try {
                     const cleanKey = sanitizeKey(apiKey); const usableModels = await getUsableModels(cleanKey);
-                    setAvailableModels(usableModels); let bestModel = usableModels.find(m => m.includes("gemini-2.0")) || usableModels[0];
+                    setAvailableModels(usableModels); let bestModel = usableModels.find(m => m.includes("gemini-3.0")) || usableModels.find(m => m.includes("gemini-2.0")) || usableModels[0];
                     setSelectedModel(bestModel); setTestStatus("success"); setTestMessage(`驗證成功！已自動偵測最新模型：${bestModel}`);
                 } catch(err) { setTestStatus("error"); setTestMessage(`失敗: ${err.message}`); }
             };
 
             const analyze = async (base64) => {
-                setIsProcessing(true); setError(null); setStatusMsg("AI 快速辨識中 (gemini-2.0)...");
+                setIsProcessing(true); setError(null);
                 if (!apiKey) { setError("請先設定 API Key"); setView("settings"); setIsProcessing(false); return; }
-                const cleanKey = sanitizeKey(apiKey);
-                
-                let chosenModel = selectedModel || "gemini-2.0-flash";
-                let modelsToTry = [chosenModel, "gemini-3.0-flash"];
+                const cleanKey = sanitizeKey(apiKey); let actualModels = availableModels;
+                try {
+                    if (actualModels.length === 0) {
+                        setStatusMsg("正在向 Google 確認授權模型..."); actualModels = await getUsableModels(cleanKey); setAvailableModels(actualModels);
+                        let bestModel = actualModels.find(m => m.includes("gemini-3.0")) || actualModels.find(m => m.includes("gemini-2.0")) || actualModels[0];
+                        setSelectedModel(bestModel);
+                    }
+                    let modelsToTry = []; const target = selectedModel || actualModels.find(m => m.includes("gemini-3.0")) || actualModels.find(m => m.includes("gemini-2.0")) || actualModels[0];
+                    if (target && actualModels.includes(target)) modelsToTry.push(target);
+                    const sorted = [...actualModels].sort((a,b)=>(b.includes("3.0")?3:b.includes("2.0")?2:0)-(a.includes("3.0")?3:a.includes("2.0")?2:0));
+                    sorted.forEach(m=>{if(!modelsToTry.includes(m)) modelsToTry.push(m)});
 
-                let lastError = "", successJson = null;
-                const prompt = `分析名片回傳JSON:{"name":"","jobTitle":"","company":"","mobile":"","tel":"","fax":"","email":"","address":"","category":"工作-客戶","note":""}。規則:1.分mobile/tel/fax 2.company合併中英 3.category[工作-客戶,工作-廠商,家人,朋友]。無Markdown。`;
-                const imagePart = { inlineData: { mimeType: "image/jpeg", data: base64.split(',')[1] } };
+                    let lastError = "", successJson = null;
+                    const prompt = `分析名片回傳JSON:{"name":"","jobTitle":"","company":"","mobile":"","tel":"","fax":"","email":"","address":"","category":"工作-客戶","note":""}。規則:1.分mobile/tel/fax 2.company合併中英 3.category[工作-客戶,工作-廠商,家人,朋友]。無Markdown。`;
+                    const imagePart = { inlineData: { mimeType: "image/jpeg", data: base64.split(',')[1] } };
 
-                for (const model of modelsToTry) {
-                    try {
-                        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
-                        const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, imagePart] }] }) });
-                        
-                        if (!res.ok) {
-                            const err = await res.json().catch(()=>({})); const msg = err.error?.message || res.statusText;
-                            if (res.status === 400 && (msg.includes("API key") || msg.includes("INVALID_ARGUMENT"))) throw new Error("API Key 無效");
-                            lastError = `[${model}] 錯誤: ${msg}`; continue; 
-                        }
-                        
-                        const json = await res.json(); let text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-                        if(!text) { lastError = "模型回傳空白內容"; continue; }
-                        text = text.replace(/```json|```/g, '').trim(); const start = text.indexOf('{'), end = text.lastIndexOf('}');
-                        successJson = JSON.parse(text.substring(start, end + 1)); break; 
-                    } catch(err) { if (err.message.includes("API Key")) throw err; lastError = err.message; }
-                }
-
-                if (!successJson) {
-                    setIsProcessing(false);
-                    setError(`連線失敗 (${lastError})`);
-                    return;
-                }
-
-                setResultData(successJson || { category: "工作-客戶" }); 
-                setBackImage(null); setAdditionalImage(null); setCurrentAvatar(null); setCurrentCardId(null); 
-                setView("result"); 
-                setIsProcessing(false);
+                    for (const model of modelsToTry) {
+                        setStatusMsg(`AI 辨識中 (${model})...`);
+                        try {
+                            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
+                            const res = await fetchWithRetry(url, { method: "POST", headers: { "Content-Type": "application/json" }, referrerPolicy: "no-referrer", body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, imagePart] }] }) });
+                            if (!res.ok) {
+                                const err = await res.json().catch(()=>({})); const msg = err.error?.message || res.statusText;
+                                if (res.status === 400 && (msg.includes("API key") || msg.includes("INVALID_ARGUMENT"))) throw new Error("API Key 無效");
+                                lastError = `[${res.status}] ${msg}`; continue; 
+                            }
+                            const json = await res.json(); let text = json.candidates?.[0]?.content?.parts?.[0]?.text;
+                            if(!text) { lastError = "模型回傳空白內容"; continue; }
+                            text = text.replace(/```json|```/g, '').trim(); const start = text.indexOf('{'), end = text.lastIndexOf('}');
+                            successJson = JSON.parse(text.substring(start, end + 1)); break; 
+                        } catch(err) { if (err.message.includes("API Key")) throw err; lastError = err.message; }
+                    }
+                    if (!successJson) throw new Error(`連線失敗 (${lastError})`);
+                    setResultData(successJson || { category: "工作-客戶" }); setBackImage(null); setAdditionalImage(null); setCurrentAvatar(null); setCurrentCardId(null); setView("result");
+                } catch(err) { setError(`辨識失敗: ${err.message}`); setView("home"); } finally { setIsProcessing(false); }
             };
 
             const saveCard = async () => {
@@ -254,7 +264,7 @@
                 r.readAsText(file); ev.target.value=''; 
             };
 
-            const baseModels = ["gemini-2.0-flash", "gemini-3.0-flash", "gemini-3.0-pro", "gemini-2.0-flash-exp"];
+            const baseModels = ["gemini-3.0-flash", "gemini-3.0-pro", "gemini-2.0-flash", "gemini-2.0-flash-exp"];
             const dropdownModels = [...new Set([...baseModels, ...availableModels])].filter(m => !m.includes("1.5"));
 
             if (showSplash) {
@@ -335,7 +345,7 @@
                                 e('label', {className: "w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"}, e('span', null, "匯入"), e(Icon, {name: "download", size: 18}), e('input', {type: "file", accept: ".json", onChange: handleImportBackup, className: "hidden"}))
                             )
                         ),
-                        e('div', {className: "text-center text-xs text-gray-400 mt-8"}, "AA Version 44.2 (⚡ React Complete Fixed)"),
+                        e('div', {className: "text-center text-xs text-gray-400 mt-8"}, "AA Version 42.0 (Native Complete)"),
                         e('button', {onClick:()=>setView("home"), className: "w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold mt-4"}, "返回")
                     ),
 
