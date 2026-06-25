@@ -4,74 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SnapCard AI - 專業人脈管家</title>
-
-    <!-- PWA 設定 -->
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SnapCard">
     <meta name="theme-color" content="#ffffff">
     <link rel="manifest" href="manifest.json">
-
+    
     <link rel="apple-touch-icon-precomposed" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23ffffff'/%3E%3Crect x='30' y='45' width='120' height='90' rx='12' fill='%231e3a8a'/%3E%3Ccircle cx='90' cy='90' r='20' fill='%23f59e0b'/%3E%3Crect x='45' y='127' width='90' height='6' rx='3' fill='%23a0aec0'/%3E%3C/svg%3E">
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23ffffff'/%3E%3Crect x='30' y='45' width='120' height='90' rx='12' fill='%231e3a8a'/%3E%3Ccircle cx='90' cy='90' r='20' fill='%23f59e0b'/%3E%3Crect x='45' y='127' width='90' height='6' rx='3' fill='%23a0aec0'/%3E%3C/svg%3E">
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152 152'%3E%3Crect width='152' height='152' fill='%23ffffff'/%3E%3Crect x='25' y='38' width='102' height='76' rx='10' fill='%231e3a8a'/%3E%3Ccircle cx='76' cy='76' r='17' fill='%23f59e0b'/%3E%3Crect x='38' y='107' width='76' height='5' rx='2.5' fill='%23a0aec0'/%3E%3C/svg%3E">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 144'%3E%3Crect width='144' height='144' fill='%23ffffff'/%3E%3Crect x='23' y='36' width='98' height='72' rx='9' fill='%231e3a8a'/%3E%3Ccircle cx='72' cy='72' r='16' fill='%23f59e0b'/%3E%3Crect x='36' y='102' width='72' height='5' rx='2.5' fill='%23a0aec0'/%3E%3C/svg%3E">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Crect x='5' y='7' width='22' height='16' rx='2' fill='%231e3a8a'/%3E%3Ccircle cx='16' cy='15' r='3.5' fill='%23f59e0b'/%3E%3Crect x='8' y='26' width='16' height='1' rx='0.5' fill='%23a0aec0'/%3E%3C/svg%3E">
 
-    <!-- ===== 修正：所有 CDN 鎖定版本 ===== -->
-    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
-    <!-- Tailwind: 改用靜態 v3 CSS，原本的 cdn.tailwindcss.com 已升級為 v4，iOS 會報 import 語法錯誤 -->
-    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@3.4.14/dist/tailwind.min.css">
-    <!-- Lucide: 鎖定版本並改用 UMD build -->
-    <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.js"></script>
-    <!-- ===================================== -->
-
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+     
     <style>
-        /* ===== 補回 Tailwind v3 靜態 CSS 缺少的 JIT 專屬 class ===== */
-
-        /* 透明度修飾符 */
-        .bg-black\/50  { background-color: rgba(0,0,0,0.5); }
-        .bg-black\/80  { background-color: rgba(0,0,0,0.8); }
-        .bg-white\/90  { background-color: rgba(255,255,255,0.9); }
-        .border-gray-100\/50 { border-color: rgba(243,244,246,0.5); }
-
-        /* 任意背景色 */
-        .bg-\[\#1e3a8a\] { background-color: #1e3a8a; }
-
-        /* 任意文字大小 */
-        .text-\[10px\] { font-size: 10px; line-height: 1.2; }
-        .text-\[11px\] { font-size: 11px; line-height: 1.2; }
-
-        /* 任意 z-index */
-        .z-\[9999\]  { z-index: 9999; }
-        .z-\[99999\] { z-index: 99999; }
-
-        /* 任意陰影 */
-        .shadow-\[0_0_0_999px_rgba\(0\,0\,0\,0\.5\)\] { box-shadow: 0 0 0 999px rgba(0,0,0,0.5); }
-        .shadow-\[0_8px_20px_rgb\(37\,99\,235\,0\.4\)\] { box-shadow: 0 8px 20px rgba(37,99,235,0.4); }
-
-        /* 任意長寬比 */
-        .aspect-\[1\.6\/1\] { aspect-ratio: 1.6/1; }
-        .aspect-\[21\/9\]   { aspect-ratio: 21/9; }
-
-        /* group-active 變體（靜態 build 不含） */
-        .group:active .group-active\:scale-95 { transform: scale(0.95); }
-
-        /* active 變體補強 */
-        .active\:scale-95:active { transform: scale(0.95); }
-
-        /* ===== 原始樣式（完全保留） ===== */
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-            margin: 0;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
+        body { 
+            background-color: #f8fafc; 
+            color: #1e293b; 
+            margin: 0; 
+            overflow-x: hidden; 
+            -webkit-tap-highlight-color: transparent; 
         }
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
+        .hide-scrollbar::-webkit-scrollbar { 
+            display: none; 
         }
         video {
             position: absolute;
@@ -115,7 +76,6 @@
 </head>
 <body>
     <div id="root">
-        <!-- 預設靜態啟動畫面 (HTML) - 含橘色動態掃描線 (保持不變) -->
         <div class="splash-screen">
             <div style="width: 120px; height: 120px; margin-bottom: 24px;">
                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
@@ -123,8 +83,7 @@
                     <circle cx="160" cy="256" r="35" fill="#e2e8f0"/>
                     <rect x="230" y="240" width="140" height="16" rx="4" fill="#94a3b8"/>
                     <rect x="230" y="270" width="100" height="12" rx="3" fill="#cbd5e1"/>
-
-                    <!-- 啟動畫面橘色掃描線動畫 -->
+                    
                     <rect x="86" y="156" width="340" height="16" fill="#f97316" opacity="0.8">
                         <animate attributeName="y" values="156;340;156" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" />
                     </rect>
@@ -134,7 +93,7 @@
             <p style="font-size: 14px; color: #cbd5e1; font-family: sans-serif; margin-top: 12px; letter-spacing: 2px; font-weight: 300;">每一次相遇都值得期待</p>
         </div>
     </div>
-
+    
     <script>
         window.onerror = function(message) {
             const root = document.getElementById('root');
@@ -143,7 +102,7 @@
             }
         };
     </script>
-
+    
     <script type="text/babel">
         const { useState, useRef, useEffect, useMemo, Component } = React;
 
@@ -162,7 +121,7 @@
         };
 
         class ErrorBoundary extends Component {
-            constructor(p){super(p);this.state={hasError:false,error:null};}
+            constructor(p){super(p);this.state={hasError:false,error:null};} 
             static getDerivedStateFromError(e){return{hasError:true,error:e};}
             render(){ if(this.state.hasError)return <div className="h-screen flex flex-col items-center justify-center p-4 text-red-600"><h3>App 發生錯誤</h3><p className="text-xs mb-4">{this.state.error?.message}</p><button onClick={()=>{localStorage.clear();window.location.reload()}} className="bg-gray-200 px-4 py-2 rounded">重置並重整</button></div>; return this.props.children; }
         }
@@ -197,9 +156,9 @@
         const CameraScanner = ({onCapture,onCancel}) => {
             const vRef = useRef(null);
             const [error, setError] = useState(null);
-
-            useEffect(()=>{
-                let s = null;
+             
+            useEffect(()=>{ 
+                let s = null; 
                 const init = async () => {
                     try {
                         s = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment", width: { ideal: 1920 }, height: { ideal: 1080 }}});
@@ -207,17 +166,17 @@
                     } catch(e) { setError("相機錯誤: "+e.message); }
                 };
                 init();
-                return ()=>s?.getTracks().forEach(t=>t.stop());
+                return ()=>s?.getTracks().forEach(t=>t.stop()); 
             },[]);
-
-            const capture = () => {
-                if(!vRef.current)return;
-                const v = vRef.current;
-                const c = document.createElement("canvas");
+             
+            const capture = () => { 
+                if(!vRef.current)return; 
+                const v = vRef.current; 
+                const c = document.createElement("canvas"); 
                 const videoRatio = v.videoWidth / v.videoHeight;
                 const displayRatio = v.clientWidth / v.clientHeight;
                 let sWidth = v.videoWidth, sHeight = v.videoHeight, sx = 0, sy = 0;
-
+                 
                 if (videoRatio > displayRatio) {
                     sWidth = v.videoHeight * displayRatio; sx = (v.videoWidth - sWidth) / 2;
                 } else {
@@ -225,12 +184,12 @@
                 }
                 const frameW = sWidth * 0.75, frameH = frameW / 1.6;
                 const frameX = sx + (sWidth - frameW) / 2, frameY = sy + (sHeight - frameH) / 2;
-
+                 
                 const MAX_DIM = 1200; let destW = frameW, destH = frameH;
                 if (destW > MAX_DIM || destH > MAX_DIM) { const scale = Math.min(MAX_DIM / destW, MAX_DIM / destH); destW *= scale; destH *= scale; }
-                c.width = destW; c.height = destH;
-                c.getContext('2d').drawImage(v, frameX, frameY, frameW, frameH, 0, 0, destW, destH);
-                onCapture(c.toDataURL("image/jpeg",0.8));
+                c.width = destW; c.height = destH; 
+                c.getContext('2d').drawImage(v, frameX, frameY, frameW, frameH, 0, 0, destW, destH); 
+                onCapture(c.toDataURL("image/jpeg",0.8)); 
             };
 
             return (
@@ -263,32 +222,32 @@
             const [view, setView] = useState("home");
             const [cards, setCards] = useState([]);
             const [isLoadingDB, setIsLoadingDB] = useState(true);
-            const [capturedImage, setCapturedImage] = useState(null);
-            const [backImage, setBackImage] = useState(null);
-            const [currentAvatar, setCurrentAvatar] = useState(null);
+            const [capturedImage, setCapturedImage] = useState(null); 
+            const [backImage, setBackImage] = useState(null); 
+            const [currentAvatar, setCurrentAvatar] = useState(null); 
             const [additionalImage, setAdditionalImage] = useState(null);
-            const [isProcessing, setIsProcessing] = useState(false);
-            const [resultData, setResultData] = useState({});
+            const [isProcessing, setIsProcessing] = useState(false); 
+            const [resultData, setResultData] = useState({}); 
             const [currentCardId, setCurrentCardId] = useState(null);
             const [filterCategory, setFilterCategory] = useState("全部");
             const [searchQuery, setSearchQuery] = useState("");
-
+             
             const [apiKey, setApiKey] = useState("");
-            const [selectedModel, setSelectedModel] = useState("");
+            const [selectedModel, setSelectedModel] = useState(""); 
             const [availableModels, setAvailableModels] = useState([]);
-
-            const [testStatus, setTestStatus] = useState("idle");
+             
+            const [testStatus, setTestStatus] = useState("idle"); 
             const [testMessage, setTestMessage] = useState("");
-            const [statusMsg, setStatusMsg] = useState("");
+            const [statusMsg, setStatusMsg] = useState(""); 
             const [error, setError] = useState(null);
-
+             
             const randomInputName = useMemo(() => `s_${Math.random().toString(36).slice(2)}`, []);
 
-            useEffect(() => {
-                safeLocalStorage.removeItem("snapcard_api_key");
-                setTimeout(() => setShowSplash(false), 2000);
+            useEffect(() => { 
+                safeLocalStorage.removeItem("snapcard_api_key"); 
+                setTimeout(() => setShowSplash(false), 2000); 
             }, []);
-
+             
             useEffect(() => { const l=async()=>{ try{const d=await dbUtils.getAll(); setCards(sortCardsList(d));}catch(e){} }; l(); }, []);
             useEffect(() => { setTimeout(() => window.lucide?.createIcons(), 100); }, [view, cards, resultData]);
 
@@ -296,12 +255,12 @@
             const handleManualAdd = () => { setResultData({ category: "工作-客戶" }); setCapturedImage(null); setBackImage(null); setCurrentAvatar(null); setAdditionalImage(null); setCurrentCardId(null); setView("result"); };
             const handleScanCapture = (base64) => { setCapturedImage(base64); setView("home"); analyze(base64); };
             const handleImageUpload = async (e, setter) => { if (e.target.files[0]) { try { const b = await compressImage(e.target.files[0]); setter(b); } catch(err) { alert("圖片處理失敗"); } } };
-
-            const clearApiKey = () => {
-                setApiKey("");
-                safeLocalStorage.removeItem("snapcard_api_key");
-                setTestStatus("idle");
-                setTestMessage("");
+             
+            const clearApiKey = () => { 
+                setApiKey(""); 
+                safeLocalStorage.removeItem("snapcard_api_key"); 
+                setTestStatus("idle"); 
+                setTestMessage(""); 
                 setAvailableModels([]);
                 setSelectedModel("");
             };
@@ -309,13 +268,13 @@
             const sanitizeKey = (k) => k.trim().replace(/[\r\n\s]/g, '');
 
             const fetchWithRetry = async (url, options) => {
-                const delays = [1000, 2000];
+                const delays = [1000, 2000]; 
                 for (let i = 0; i <= delays.length; i++) {
                     try {
                         const res = await fetch(url, options);
-                        if (res.status === 429) return res;
+                        if (res.status === 429) return res; 
                         if (!res.ok && res.status >= 500 && i < delays.length) { await new Promise(resolve => setTimeout(resolve, delays[i])); continue; }
-                        return res;
+                        return res; 
                     } catch (err) { if (i === delays.length) throw err; await new Promise(resolve => setTimeout(resolve, delays[i])); }
                 }
             };
@@ -375,7 +334,7 @@
                                 const err = await res.json().catch(()=>({}));
                                 const msg = err.error?.message || res.statusText;
                                 if (res.status === 400 && (msg.includes("API key") || msg.includes("INVALID_ARGUMENT"))) throw new Error("API Key 無效");
-                                console.warn(`[${model}] 失敗 (${res.status})，瞬間跳過...`); lastError = `[${res.status}] ${msg}`; continue;
+                                console.warn(`[${model}] 失敗 (${res.status})，瞬間跳過...`); lastError = `[${res.status}] ${msg}`; continue; 
                             }
                             const json = await res.json();
                             let text = json.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -383,7 +342,7 @@
                             text = text.replace(/```json|```/g, '').trim();
                             const start = text.indexOf('{'), end = text.lastIndexOf('}');
                             successJson = JSON.parse(text.substring(start, end + 1));
-                            break;
+                            break; 
                         } catch(e) { if (e.message.includes("API Key")) throw e; lastError = e.message; }
                     }
                     if (!successJson) throw new Error(`連線失敗 (${lastError})`);
@@ -420,7 +379,24 @@
                 const blob = new Blob([vcf], { type: 'text/vcard' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.download = `${displayName}.vcf`; a.href = url; document.body.appendChild(a); a.click(); document.body.removeChild(a);
             };
             const exportData = () => { const blob = new Blob([JSON.stringify(cards,null,2)], {type:"application/json"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "snapcard_backup.json"; a.click(); };
-            const importData = (e) => { const file = e.target.files[0]; if(!file)return; const r = new FileReader(); r.onload=async(ev)=>{ try { const d = JSON.parse(ev.target.result); for(const c of d) await dbUtils.put(c); const all = await dbUtils.getAll(); setCards(sortCardsList(all)); alert("匯入成功"); } catch{alert("格式錯誤");} }; r.readAsText(file); e.target.value=''; };
+            
+            // 已將此處的函數名稱從會引發錯誤的 importData 改名為 handleImportBackup
+            const handleImportBackup = (e) => { 
+                const file = e.target.files[0]; 
+                if(!file)return; 
+                const r = new FileReader(); 
+                r.onload=async(ev)=>{ 
+                    try { 
+                        const d = JSON.parse(ev.target.result); 
+                        for(const c of d) await dbUtils.put(c); 
+                        const all = await dbUtils.getAll(); 
+                        setCards(sortCardsList(all)); 
+                        alert("匯入成功"); 
+                    } catch{alert("格式錯誤");} 
+                }; 
+                r.readAsText(file); 
+                e.target.value=''; 
+            };
 
             const baseModels = ["gemini-3.0-flash", "gemini-3.0-pro", "gemini-2.0-flash", "gemini-2.0-flash-exp"];
             const dropdownModels = [...new Set([...baseModels, ...availableModels])].filter(m => !m.includes("1.5"));
@@ -513,10 +489,10 @@
                                     <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Icon name="database" className="text-purple-500"/> 資料管理</h3>
                                     <div className="space-y-3">
                                         <button onClick={exportData} className="w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700"><span>匯出 (JSON)</span><Icon name="upload" size={18}/></button>
-                                        <label className="w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"><span>匯入</span><Icon name="download" size={18}/><input type="file" accept=".json" onChange={importData} className="hidden"/></label>
+                                        <label className="w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"><span>匯入</span><Icon name="download" size={18}/><input type="file" accept=".json" onChange={handleImportBackup} className="hidden"/></label>
                                     </div>
                                 </div>
-                                <div className="text-center text-xs text-gray-400 mt-8">Version 38.6 (Original Code + CDN Fix)</div>
+                                <div className="text-center text-xs text-gray-400 mt-8">AA Version 38.4 (Bugs Fixed)</div>
                                 <button onClick={()=>setView("home")} className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold mt-4">返回</button>
                             </div>
                         )}
@@ -550,8 +526,10 @@
                                             if (val) {
                                                 if (['mobile','tel','fax'].includes(f.k)) href = `tel:${val.replace(/[^0-9+]/g, '')}`;
                                                 else if (f.k === 'email') href = `mailto:${val}`;
+                                                // 已修正此處大括號與金錢符號的缺漏問題，並更新為標準 Google Maps 搜尋連結
                                                 else if (f.k === 'address') { href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(val)}`; target = "_blank"; }
                                             }
+
                                             return (
                                                 <div key={f.k} className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl relative">
                                                     {href ? (
@@ -604,7 +582,7 @@
                 </div>
             );
         }
-
+        
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(
             <ErrorBoundary>
@@ -614,4 +592,3 @@
     </script>
 </body>
 </html>
-
