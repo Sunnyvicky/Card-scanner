@@ -33,7 +33,7 @@
                     <rect x="230" y="240" width="140" height="16" rx="4" fill="#94a3b8"/>
                     <rect x="230" y="270" width="100" height="12" rx="3" fill="#cbd5e1"/>
                     <rect x="86" y="156" width="340" height="16" fill="#f97316" opacity="0.8">
-                        <animate attributeName="y" values="156;340;156" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1") />
+                        <animate attributeName="y" values="156;340;156" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" />
                     </rect>
                 </svg>
             </div>
@@ -181,13 +181,11 @@
                 } catch(err) { setTestStatus("error"); setTestMessage(`失敗: ${err.message}`); }
             };
 
-            // ⚡ 終極極速優化點：徹底移除盲測舊模型邏輯，開門見山「直接鎖定」gemini-2.0-flash！
             const analyze = async (base64) => {
                 setIsProcessing(true); setError(null); setStatusMsg("AI 快速辨識中 (gemini-2.0)...");
                 if (!apiKey) { setError("請先設定 API Key"); setView("settings"); setIsProcessing(false); return; }
                 const cleanKey = sanitizeKey(apiKey);
                 
-                // 堅決排除任何舊版，直接鎖定 2.0-flash 作為首選，3.0-flash 作為唯一備份
                 let chosenModel = selectedModel || "gemini-2.0-flash";
                 let modelsToTry = [chosenModel, "gemini-3.0-flash"];
 
@@ -215,10 +213,14 @@
 
                 if (!successJson) {
                     setIsProcessing(false);
-                    throw new Error(`連線失敗 (${lastError})`);
+                    setError(`連線失敗 (${lastError})`);
+                    return;
                 }
 
-                setResultData(successJson || { category: "工作-客戶" }); setBackImage(null); setAdditionalImage(null); setCurrentAvatar(null); setCurrentCardId(null); setView("result"); setIsProcessing(false);
+                setResultData(successJson || { category: "工作-客戶" }); 
+                setBackImage(null); setAdditionalImage(null); setCurrentAvatar(null); setCurrentCardId(null); 
+                setView("result"); 
+                setIsProcessing(false);
             };
 
             const saveCard = async () => {
@@ -333,7 +335,7 @@
                                 e('label', {className: "w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"}, e('span', null, "匯入"), e(Icon, {name: "download", size: 18}), e('input', {type: "file", accept: ".json", onChange: handleImportBackup, className: "hidden"}))
                             )
                         ),
-                        e('div', {className: "text-center text-xs text-gray-400 mt-8"}, "AA Version 44.0 (⚡ Speed Locked)"),
+                        e('div', {className: "text-center text-xs text-gray-400 mt-8"}, "AA Version 44.2 (⚡ React Complete Fixed)"),
                         e('button', {onClick:()=>setView("home"), className: "w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold mt-4"}, "返回")
                     ),
 
