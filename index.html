@@ -527,7 +527,7 @@
                                                 if (['mobile','tel','fax'].includes(f.k)) href = `tel:${val.replace(/[^0-9+]/g, '')}`;
                                                 else if (f.k === 'email') href = `mailto:${val}`;
                                                 // 安全修正點：在字串樣版的大括號前補上了 $ 符號，防止瀏覽器相容性崩潰
-                                                else if (f.k === 'address') { href = `https://www.google.com/maps/search/?api=1&query=$\${encodeURIComponent(val)}`; target = "_blank"; }
+                                                else if (f.k === 'address') { href = `https://www.google.com/maps/search/?api=1&query=$${encodeURIComponent(val)}`; target = "_blank"; }
                                             }
 
                                             return (
