@@ -1,422 +1,107 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SnapCard AI - 專業人脈管家</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SnapCard">
-    <meta name="theme-color" content="#ffffff">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon-precomposed" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23ffffff'/%3E%3Crect x='30' y='45' width='120' height='90' rx='12' fill='%231e3a8a'/%3E%3Ccircle cx='90' cy='90' r='20' fill='%23f59e0b'/%3E%3Crect x='45' y='127' width='90' height='6' rx='3' fill='%23a0aec0'/%3E%3C/svg%3E">
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body { background-color: #f8fafc; color: #1e293b; margin: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 10; transform: scaleX(1); }
-        @keyframes scan { 0% { top: 0%; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
-        .scan-line { position: absolute; left: 0; width: 100%; height: 2px; background: #f97316; box-shadow: 0 0 10px #f97316; animation: scan 2s linear infinite; }
-        .splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease-out; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#123a75">
+  <title>名脈 MingMai</title>
+  <style>
+    :root{--navy:#123a75;--blue:#2563eb;--sky:#eaf3ff;--ink:#172033;--muted:#697386;--line:#e5e9f0;--bg:#f5f7fb;--danger:#c83636;--good:#087d58}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:ui-sans-serif,system-ui,"Noto Sans TC",Arial,sans-serif;color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}button:disabled{opacity:.55;cursor:not-allowed}.app{max-width:760px;min-height:100vh;margin:auto;background:#fff;box-shadow:0 0 30px #1d355715}.top{position:sticky;top:0;z-index:5;padding:17px 20px 14px;background:#fffdfdE8;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.brand{font-weight:900;letter-spacing:-.8px;color:var(--navy);font-size:22px}.brand small{font-size:10px;letter-spacing:1px;color:#e77b28;margin-left:5px}.icon{width:38px;height:38px;border-radius:12px;background:#f1f5f9;color:var(--navy);font-size:19px}.content{padding:18px 18px 108px}.hero{background:linear-gradient(125deg,#123a75,#2563eb);padding:22px;border-radius:22px;color:#fff;margin-bottom:16px}.hero h1{margin:0 0 6px;font-size:23px}.hero p{margin:0;color:#dbeafe;font-size:14px;line-height:1.55}.primary,.secondary,.ghost,.danger{border-radius:13px;padding:12px 15px;font-weight:750}.primary{background:var(--blue);color:#fff;box-shadow:0 7px 16px #2563eb40}.secondary{background:var(--sky);color:#164f9d}.ghost{background:#f5f6f8;color:#4a5568}.danger{background:#fff1f1;color:var(--danger)}.wide{width:100%}.row{display:flex;gap:10px;align-items:center}.row>*{min-width:0}.between{justify-content:space-between}.grow{flex:1}.search{position:relative;margin:14px 0}.search input{width:100%;padding:13px 38px 13px 15px;border:1px solid var(--line);border-radius:14px;background:#fff;outline:none}.search input:focus,.field input:focus,.field textarea:focus,.field select:focus{border-color:#77a8f9;box-shadow:0 0 0 3px #dbeafe;outline:0}.clear-search{position:absolute;right:6px;top:5px;background:transparent;color:#94a3b8;font-size:18px}.chips{display:flex;gap:8px;overflow:auto;padding:2px 0 12px}.chip{white-space:nowrap;border:1px solid var(--line);border-radius:999px;background:#fff;padding:7px 11px;font-size:12px;color:#526071}.chip.active{background:var(--navy);border-color:var(--navy);color:#fff}.toolbar{font-size:13px;color:var(--muted);margin:0 0 12px}.toolbar select{border:0;background:transparent;color:var(--navy);font-weight:700}.card{display:flex;align-items:center;gap:13px;border:1px solid var(--line);border-radius:17px;padding:13px;margin:10px 0;background:#fff}.card:active{background:#f8fbff}.avatar{width:49px;height:49px;border-radius:15px;object-fit:cover;background:#deebff;display:grid;place-items:center;font-weight:800;color:var(--navy);flex:none}.card-main{min-width:0;flex:1}.card-name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-sub{font-size:13px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.star{background:transparent;color:#f2a51a;font-size:20px;padding:5px}.empty{text-align:center;padding:46px 20px;color:var(--muted)}.empty .big{font-size:42px}.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(760px,100%);padding:12px 18px max(12px,env(safe-area-inset-bottom));background:#fffdfdE8;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;gap:10px;z-index:5}.bottom button{flex:1}.sheet{display:none}.sheet.show{display:block}.form-title{font-size:21px;font-weight:900;margin:1px 0 18px}.notice{border-radius:13px;padding:12px 13px;font-size:13px;line-height:1.5;background:#fff7e6;color:#855b11;margin:12px 0}.notice.info{background:#eef6ff;color:#24568f}.notice.good{background:#eafaf4;color:#126549}.images{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:16px}.image-slot{position:relative;aspect-ratio:1.58;border:1.5px dashed #aebdce;border-radius:16px;overflow:hidden;background:#f7f9fc;display:grid;place-items:center;color:#607086;text-align:center;font-size:13px}.image-slot img{width:100%;height:100%;object-fit:cover}.image-slot input{display:none}.image-slot label{position:absolute;inset:0;display:grid;place-items:center;cursor:pointer;background:linear-gradient(#ffffff60,#ffffff60)}.image-slot.has img+label{inset:auto 7px 7px auto;background:#172033c9;color:#fff;padding:6px 9px;border-radius:9px;font-size:12px}.remove-image{position:absolute;top:7px;right:7px;border-radius:50%;background:#172033d9;color:#fff;width:25px;height:25px;z-index:2}.field{margin:12px 0}.field label{display:block;font-size:12px;font-weight:750;color:#58667a;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:#fff;color:var(--ink)}.field textarea{min-height:84px;resize:vertical}.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.section{border:1px solid var(--line);border-radius:17px;padding:15px;margin:14px 0}.section h2{font-size:15px;margin:0 0 9px}.dupes{border:1px solid #f7d38d;background:#fffaf0;border-radius:13px;padding:11px;font-size:13px}.dupes button{background:transparent;color:#1d62bc;font-weight:750;text-decoration:underline;padding:2px}.loading{position:fixed;inset:0;z-index:20;display:none;place-items:center;background:#ffffffdc;text-align:center;padding:30px}.loading.show{display:grid}.spinner{width:45px;height:45px;border:4px solid #cfe0ff;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:auto}@keyframes spin{to{transform:rotate(360deg)}}.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);opacity:0;transition:.2s;background:#172033;color:#fff;border-radius:12px;padding:10px 14px;font-size:13px;z-index:30;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}.modal{position:fixed;inset:0;z-index:15;background:#17203375;display:none;align-items:end}.modal.show{display:flex}.modal-box{width:min(760px,100%);max-height:85vh;overflow:auto;background:#fff;border-radius:24px 24px 0 0;padding:20px}.modal-box h2{margin:0 0 8px}.settings-note{font-size:13px;color:var(--muted);line-height:1.55}.small{font-size:12px;color:var(--muted)}.link{color:#1764bd;font-weight:700;text-decoration:none}.hidden{display:none!important}@media(max-width:420px){.content{padding:15px}.pair{grid-template-columns:1fr}.hero{padding:19px}}
+  </style>
 </head>
 <body>
-    <div id="root">
-        <div class="splash-screen">
-            <div style="width: 120px; height: 120px; margin-bottom: 24px;">
-               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-                    <rect x="86" y="156" width="340" height="200" rx="20" fill="white"/>
-                    <circle cx="160" cy="256" r="35" fill="#e2e8f0"/>
-                    <rect x="230" y="240" width="140" height="16" rx="4" fill="#94a3b8"/>
-                    <rect x="230" y="270" width="100" height="12" rx="3" fill="#cbd5e1"/>
-                    <rect x="86" y="156" width="340" height="16" fill="#f97316" opacity="0.8">
-                        <animate attributeName="y" values="156;340;156" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1; 0.45 0 0.55 1" />
-                    </rect>
-                </svg>
-            </div>
-            <h1 style="font-size: 32px; font-weight: 900; color: white; font-family: sans-serif; letter-spacing: 1px;">SnapCard</h1>
-            <p style="font-size: 14px; color: #cbd5e1; font-family: sans-serif; margin-top: 12px; letter-spacing: 2px; font-weight: 300;">每一次相遇都值得期待</p>
-        </div>
-    </div>
-    <script>
-        window.onerror = function(message) {
-            const root = document.getElementById('root');
-            if (root) {
-                root.innerHTML = '<div style="padding:20px; text-align:center; color:red; margin-top:50px;"><h3>應用程式發生錯誤</h3><p>' + message + '</p><button onclick="localStorage.clear();location.reload()" style="padding:10px; background:#eee; border:1px solid #ccc; border-radius:5px; margin-top:10px;">清除資料並重整</button></div>';
-            }
-        };
-    </script>
-    <script>
-        const { useState, useRef, useEffect, useMemo, Component } = React;
-        const e = React.createElement;
-
-        const safeLocalStorage = {
-            getItem: (key) => { try { return localStorage.getItem(key); } catch(err) { return null; } },
-            setItem: (key, value) => { try { localStorage.setItem(key, value); } catch(err) {} },
-            removeItem: (key) => { try { localStorage.removeItem(key); } catch(err) {} }
-        };
-
-        const dbUtils = {
-            open: () => new Promise((res, rej) => { try { const r=indexedDB.open('SnapCardDB',1); r.onupgradeneeded=(ev)=>{const d=ev.target.result;if(!d.objectStoreNames.contains('cards'))d.createObjectStore('cards',{keyPath:'id'});}; r.onsuccess=(ev)=>res(ev.target.result); r.onerror=(ev)=>rej(ev.target.error); } catch(err){rej(err);} }),
-            getAll: async () => { const db=await dbUtils.open(); return new Promise((res, rej)=>{ const tx=db.transaction(['cards'],'readonly'); const req=tx.objectStore('cards').getAll(); req.onsuccess=()=>res(req.result); req.onerror=()=>rej(req.error); }); },
-            put: async (card) => { const db=await dbUtils.open(); return new Promise((res, rej)=>{ const tx=db.transaction(['cards'],'readwrite'); const req=tx.objectStore('cards').put(card); req.onsuccess=()=>res(req.result); req.onerror=()=>rej(req.error); }); },
-            delete: async (id) => { const db=await dbUtils.open(); return new Promise((res, rej)=>{ const tx=db.transaction(['cards'],'readwrite'); const req=tx.objectStore('cards').delete(id); req.onsuccess=()=>res(); req.onerror=()=>rej(req.error); }); },
-            clear: async () => { const db=await dbUtils.open(); return new Promise((res, rej)=>{ const tx=db.transaction(['cards'],'readwrite'); const req=tx.objectStore('cards').clear(); req.onsuccess=()=>res(); req.onerror=()=>rej(req.error); }); }
-        };
-
-        class ErrorBoundary extends Component {
-            constructor(p){super(p);this.state={hasError:false,error:null};} 
-            static getDerivedStateFromError(err){return{hasError:true,error:err};}
-            render(){ if(this.state.hasError)return e('div', {className: "h-screen flex flex-col items-center justify-center p-4 text-red-600"}, e('h3', null, 'App 發生錯誤'), e('p', {className: "text-xs mb-4"}, this.state.error?.message), e('button', {onClick:()=>{localStorage.clear();window.location.reload()}, className: "bg-gray-200 px-4 py-2 rounded"}, '重置並重整')); return this.props.children; }
-        }
-
-        const Icon = ({ name, size = 20, className = "" }) => {
-            const ref = useRef(null);
-            useEffect(() => {
-                if (!ref.current || !window.lucide) return;
-                const container = ref.current; container.innerHTML = '';
-                const i = document.createElement('i'); i.setAttribute('data-lucide', name);
-                if(className) { className.split(' ').forEach(cls => { if(cls) i.classList.add(cls); }); }
-                container.appendChild(i);
-                window.lucide.createIcons({ root: container, attrs: { width: size, height: size, class: className } });
-            }, [name, size, className]);
-            return e('span', { ref: ref, style: { display: 'inline-flex', alignItems: 'center' } });
-        };
-
-        const compressImage = (file) => new Promise((res,rej)=>{
-            if(!file)return rej("No file"); const u=URL.createObjectURL(file); const i=new Image(); i.src=u;
-            i.onload=()=>{ URL.revokeObjectURL(u); const c=document.createElement('canvas'); const m=1200; let w=i.width,h=i.height; if(w>h){if(w>m){h*=m/w;w=m;}}else{if(h>m){w*=m/h;h=m;}} c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.drawImage(i,0,0,w,h); res(c.toDataURL('image/jpeg',0.8)); }; i.onerror=rej;
-        });
-
-        const CameraScanner = ({onCapture,onCancel}) => {
-            const vRef = useRef(null); const [error, setError] = useState(null);
-            useEffect(()=>{ 
-                let s = null; 
-                const init = async () => {
-                    try {
-                        s = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment", width: { ideal: 1920 }, height: { ideal: 1080 }}});
-                        if(vRef.current) { vRef.current.srcObject=s; vRef.current.play().catch(console.error); }
-                    } catch(err) { setError("相機錯誤: "+err.message); }
-                };
-                init(); return ()=>s?.getTracks().forEach(t=>t.stop()); 
-            },[]);
-            const capture = () => { 
-                if(!vRef.current)return; const v = vRef.current; const c = document.createElement("canvas"); 
-                const videoRatio = v.videoWidth / v.videoHeight; const displayRatio = v.clientWidth / v.clientHeight;
-                let sWidth = v.videoWidth, sHeight = v.videoHeight, sx = 0, sy = 0;
-                if (videoRatio > displayRatio) { sWidth = v.videoHeight * displayRatio; sx = (v.videoWidth - sWidth) / 2; } 
-                else { sHeight = v.videoWidth / displayRatio; sy = (v.videoHeight - sHeight) / 2; }
-                const frameW = sWidth * 0.75, frameH = frameW / 1.6; const frameX = sx + (sWidth - frameW) / 2, frameY = sy + (sHeight - frameH) / 2;
-                const MAX_DIM = 1200; let destW = frameW, destH = frameH;
-                if (destW > MAX_DIM || destH > MAX_DIM) { const scale = Math.min(MAX_DIM / destW, MAX_DIM / destH); destW *= scale; destH *= scale; }
-                c.width = destW; c.height = destH; c.getContext('2d').drawImage(v, frameX, frameY, frameW, frameH, 0, 0, destW, destH); 
-                onCapture(c.toDataURL("image/jpeg",0.8)); 
-            };
-            return e('div', {className: "fixed inset-0 bg-black z-50 flex flex-col"},
-                e('div', {className: "flex-1 relative overflow-hidden"},
-                    e('video', {ref: vRef, playsInline: true, muted: true, autoPlay: true, className: "w-full h-full object-cover"}),
-                    error && e('div', {className: "absolute inset-0 flex items-center justify-center text-white bg-black/80"}, error),
-                    e('div', {className: "absolute inset-0 flex items-center justify-center pointer-events-none z-20"},
-                        e('div', {className: "w-3/4 aspect-[1.6/1] border-2 border-blue-500 rounded-xl relative shadow-[0_0_0_999px_rgba(0,0,0,0.5)] overflow-hidden"},
-                            e('div', {className: "scan-line"}),
-                            e('div', {className: "absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-blue-500 -mt-1 -ml-1"}),
-                            e('div', {className: "absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-blue-500 -mt-1 -mr-1"}),
-                            e('div', {className: "absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-blue-500 -mb-1 -ml-1"}),
-                            e('div', {className: "absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-blue-500 -mb-1 -mr-1"})
-                        )
-                    ),
-                    e('div', {className: "absolute bottom-32 w-full text-center z-20"}, e('span', {className: "px-4 py-2 bg-black/50 text-white text-xs rounded-full"}, "請將名片放入框內"))
-                ),
-                e('div', {className: "absolute bottom-0 left-0 w-full h-32 flex items-center justify-center gap-12 pb-6 bg-black/80 z-50"},
-                    e('button', {onClick: onCancel, className: "text-white font-bold p-4"}, "取消"),
-                    e('button', {onClick: capture, className: "w-16 h-16 bg-white rounded-full border-4 border-gray-300 shadow-lg active:scale-95 transition-transform"}),
-                    e('div', {className: "w-12"})
-                )
-            );
-        };
-
-        function App() {
-            const [showSplash, setShowSplash] = useState(true); const [view, setView] = useState("home");
-            const [cards, setCards] = useState([]); const [isLoadingDB, setIsLoadingDB] = useState(true);
-            const [capturedImage, setCapturedImage] = useState(null); const [backImage, setBackImage] = useState(null); 
-            const [currentAvatar, setCurrentAvatar] = useState(null); const [additionalImage, setAdditionalImage] = useState(null);
-            const [isProcessing, setIsProcessing] = useState(false); const [resultData, setResultData] = useState({}); 
-            const [currentCardId, setCurrentCardId] = useState(null); const [filterCategory, setFilterCategory] = useState("全部");
-            const [searchQuery, setSearchQuery] = useState(""); const [apiKey, setApiKey] = useState("");
-            const [selectedModel, setSelectedModel] = useState(""); const [availableModels, setAvailableModels] = useState([]);
-            const [testStatus, setTestStatus] = useState("idle"); const [testMessage, setTestMessage] = useState("");
-            const [statusMsg, setStatusMsg] = useState(""); const [error, setError] = useState(null);
-            const randomInputName = useMemo(() => `s_${Math.random().toString(36).slice(2)}`, []);
-
-            useEffect(() => { safeLocalStorage.removeItem("snapcard_api_key"); setTimeout(() => setShowSplash(false), 2000); }, []);
-            useEffect(() => { const l=async()=>{ try{const d=await dbUtils.getAll(); setCards(sortCardsList(d));}catch(err){} }; l(); }, []);
-            useEffect(() => { setTimeout(() => window.lucide?.createIcons(), 100); }, [view, cards, resultData]);
-
-            const startScanFlow = () => { if (!apiKey) { setView("settings"); return; } setView("scan"); };
-            const handleManualAdd = () => { setResultData({ category: "工作-客戶" }); setCapturedImage(null); setBackImage(null); setCurrentAvatar(null); setAdditionalImage(null); setCurrentCardId(null); setView("result"); };
-            const handleManualEdit = (card) => { setResultData(card); setCapturedImage(card.image); setBackImage(card.backImage); setCurrentAvatar(card.avatar); setAdditionalImage(card.additionalImage); setCurrentCardId(card.id); setView("result"); };
-            const handleImageUpload = async (ev, setter) => { if (ev.target.files[0]) { try { const b = await compressImage(ev.target.files[0]); setter(b); } catch(err) { alert("圖片處理失敗"); } } };
-            const clearApiKey = () => { setApiKey(""); safeLocalStorage.removeItem("snapcard_api_key"); setTestStatus("idle"); setTestMessage(""); setAvailableModels([]); setSelectedModel(""); };
-            const sanitizeKey = (k) => k.trim().replace(/[\r\n\s]/g, '');
-
-            const fetchWithRetry = async (url, options) => {
-                const delays = [1000, 2000]; 
-                for (let i = 0; i <= delays.length; i++) {
-                    try {
-                        const res = await fetch(url, options); if (res.status === 429) return res; 
-                        if (!res.ok && res.status >= 500 && i < delays.length) { await new Promise(r => setTimeout(r, delays[i])); continue; }
-                        return res; 
-                    } catch (err) { if (i === delays.length) throw err; await new Promise(r => setTimeout(r, delays[i])); }
-                }
-            };
-
-            const getUsableModels = async (cleanKey) => {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`;
-                const res = await fetchWithRetry(url, { method: 'GET' });
-                if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(`[${res.status}] ${err.error?.message || res.statusText}`); }
-                const data = await res.json();
-                const usable = data.models.filter(m => m.supportedGenerationMethods?.includes("generateContent") && m.name.includes("gemini") && !m.name.includes("1.5")).map(m => m.name.replace("models/", ""));
-                if (usable.length === 0) throw new Error("此 Key 無法存取 Gemini 2.0/3.0 模型");
-                return usable;
-            };
-
-            const fetchModelsAndTest = async () => {
-                if(!apiKey) return setTestMessage("請輸入 Key");
-                setTestStatus("testing"); setTestMessage("正在查詢您的授權模型...");
-                try {
-                    const cleanKey = sanitizeKey(apiKey); const usableModels = await getUsableModels(cleanKey);
-                    setAvailableModels(usableModels); let bestModel = usableModels.find(m => m.includes("gemini-3.0")) || usableModels.find(m => m.includes("gemini-2.0")) || usableModels[0];
-                    setSelectedModel(bestModel); setTestStatus("success"); setTestMessage(`驗證成功！已自動偵測最新模型：${bestModel}`);
-                } catch(err) { setTestStatus("error"); setTestMessage(`失敗: ${err.message}`); }
-            };
-
-            const analyze = async (base64) => {
-                setIsProcessing(true); setError(null);
-                if (!apiKey) { setError("請先設定 API Key"); setView("settings"); setIsProcessing(false); return; }
-                const cleanKey = sanitizeKey(apiKey); let actualModels = availableModels;
-                try {
-                    if (actualModels.length === 0) {
-                        setStatusMsg("正在向 Google 確認授權模型..."); actualModels = await getUsableModels(cleanKey); setAvailableModels(actualModels);
-                        let bestModel = actualModels.find(m => m.includes("gemini-3.0")) || actualModels.find(m => m.includes("gemini-2.0")) || actualModels[0];
-                        setSelectedModel(bestModel);
-                    }
-                    let modelsToTry = []; const target = selectedModel || actualModels.find(m => m.includes("gemini-3.0")) || actualModels.find(m => m.includes("gemini-2.0")) || actualModels[0];
-                    if (target && actualModels.includes(target)) modelsToTry.push(target);
-                    const sorted = [...actualModels].sort((a,b)=>(b.includes("3.0")?3:b.includes("2.0")?2:0)-(a.includes("3.0")?3:a.includes("2.0")?2:0));
-                    sorted.forEach(m=>{if(!modelsToTry.includes(m)) modelsToTry.push(m)});
-
-                    let lastError = "", successJson = null;
-                    const prompt = `分析名片回傳JSON:{"name":"","jobTitle":"","company":"","mobile":"","tel":"","fax":"","email":"","address":"","category":"工作-客戶","note":""}。規則:1.分mobile/tel/fax 2.company合併中英 3.category[工作-客戶,工作-廠商,家人,朋友]。無Markdown。`;
-                    const imagePart = { inlineData: { mimeType: "image/jpeg", data: base64.split(',')[1] } };
-
-                    for (const model of modelsToTry) {
-                        setStatusMsg(`AI 辨識中 (${model})...`);
-                        try {
-                            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
-                            const res = await fetchWithRetry(url, { method: "POST", headers: { "Content-Type": "application/json" }, referrerPolicy: "no-referrer", body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, imagePart] }] }) });
-                            if (!res.ok) {
-                                const err = await res.json().catch(()=>({})); const msg = err.error?.message || res.statusText;
-                                if (res.status === 400 && (msg.includes("API key") || msg.includes("INVALID_ARGUMENT"))) throw new Error("API Key 無效");
-                                lastError = `[${res.status}] ${msg}`; continue; 
-                            }
-                            const json = await res.json(); let text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-                            if(!text) { lastError = "模型回傳空白內容"; continue; }
-                            text = text.replace(/```json|```/g, '').trim(); const start = text.indexOf('{'), end = text.lastIndexOf('}');
-                            successJson = JSON.parse(text.substring(start, end + 1)); break; 
-                        } catch(err) { if (err.message.includes("API Key")) throw err; lastError = err.message; }
-                    }
-                    if (!successJson) throw new Error(`連線失敗 (${lastError})`);
-                    setResultData(successJson || { category: "工作-客戶" }); setBackImage(null); setAdditionalImage(null); setCurrentAvatar(null); setCurrentCardId(null); setView("result");
-                } catch(err) { setError(`辨識失敗: ${err.message}`); setView("home"); } finally { setIsProcessing(false); }
-            };
-
-            const saveCard = async () => {
-                const newData = { id: currentCardId || Date.now(), ...resultData, image: capturedImage, backImage: backImage, avatar: currentAvatar, additionalImage: additionalImage, category: resultData.category||"工作-客戶" };
-                await dbUtils.put(newData); const d = await dbUtils.getAll(); setCards(sortCardsList(d)); setView("home");
-            };
-            const handleDeleteCard = async (id, ev) => { ev.stopPropagation(); if(confirm("刪除?")) { await dbUtils.delete(id); setCards(prev => prev.filter(c => c.id !== id)); } };
-            const sortCardsList = (cardsArray) => {
-                return [...cardsArray].sort((a, b) => {
-                    const compA = (a.company || "").toString().toLowerCase(); const compB = (b.company || "").toString().toLowerCase();
-                    if (compA < compB) return -1; if (compA > compB) return 1;
-                    const nameA = (a.name || "").toString().toLowerCase(); const nameB = (b.name || "").toString().toLowerCase();
-                    if (nameA < nameB) return -1; if (nameA > nameB) return 1;
-                    return b.id - a.id;
-                });
-            };
-            const downloadSingleVcf = () => {
-                const card = resultData; let vcf = "BEGIN:VCARD\nVERSION:3.0\n"; let displayName = card.name || "未命名";
-                if (card.company) displayName = `${card.company} ${displayName}`; vcf += `FN:${displayName}\nN:${displayName};;;;\n`;
-                if (card.company) vcf += `ORG:${card.company};\n`; if (card.jobTitle) vcf += `TITLE:${card.jobTitle}\n`;
-                if (card.mobile) vcf += `TEL;type=CELL:${card.mobile}\n`; if (card.tel) vcf += `TEL;type=WORK:${card.tel}\n`; if (card.fax) vcf += `TEL;type=FAX:${card.fax}\n`;
-                if (card.email) vcf += `EMAIL;type=INTERNET;type=WORK:${card.email}\n`; if (card.address) vcf += `ADR;type=WORK:;;${card.address};;;;\n`;
-                let notes = []; if (card.category) notes.push(`分類: ${card.category}`); if (card.note) notes.push(card.note); if (notes.length > 0) vcf += `NOTE:${notes.join(' | ')}\n`;
-                vcf += "END:VCARD\n";
-                const blob = new Blob([vcf], { type: 'text/vcard' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.download = `${displayName}.vcf`; a.href = url; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            };
-            const exportData = () => { const blob = new Blob([JSON.stringify(cards,null,2)], {type:"application/json"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "snapcard_backup.json"; a.click(); };
-            const handleImportBackup = (ev) => { 
-                const file = ev.target.files[0]; if(!file) return; const r = new FileReader(); 
-                r.onload=async(e)=> { try { const d = JSON.parse(e.target.result); for(const c of d) await dbUtils.put(c); const all = await dbUtils.getAll(); setCards(sortCardsList(all)); alert("匯入成功"); } catch(err){alert("格式錯誤");} };
-                r.readAsText(file); ev.target.value=''; 
-            };
-
-            const baseModels = ["gemini-3.0-flash", "gemini-3.0-pro", "gemini-2.0-flash", "gemini-2.0-flash-exp"];
-            const dropdownModels = [...new Set([...baseModels, ...availableModels])].filter(m => !m.includes("1.5"));
-
-            if (showSplash) {
-                return e('div', {className: "fixed inset-0 bg-[#1e3a8a] z-[9999] flex flex-col items-center justify-center", style: {background: 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)'}},
-                    e('div', {style: { width: '120px', height: '120px', marginBottom: '24px' }},
-                        e('svg', {xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 512 512", fill: "none"},
-                            e('rect', {x: "86", y: "156", width: "340", height: "200", rx: "20", fill: "white"}),
-                            e('circle', {cx: "160", cy: "256", r: "35", fill: "#e2e8f0"}),
-                            e('rect', {x: "230", y: "240", width: "140", height: "16", rx: "4", fill: "#94a3b8"}),
-                            e('rect', {x: "230", y: "270", width: "100", height: "12", rx: "3", fill: "#cbd5e1"}),
-                            e('rect', {x: "86", y: "156", width: "340", height: "16", fill: "#f97316", opacity: "0.8"},
-                                e('animate', {attributeName: "y", values: "156;340;156", dur: "2s", repeatCount: "indefinite", calcMode: "spline", keySplines: "0.45 0 0.55 1; 0.45 0 0.55 1"})
-                            )
-                        )
-                    ),
-                    e('h1', {style: {fontSize: '32px', fontWeight: '900', color: 'white', fontFamily: 'sans-serif', letterSpacing: '1px'}}, "SnapCard"),
-                    e('p', {style: {fontSize: '14px', color: '#cbd5e1', fontFamily: 'sans-serif', marginTop: '12px', letterSpacing: '2px', fontWeight: 300}}, "每一次相遇都值得期待")
-                );
-            }
-
-            return e('div', {className: "max-w-md mx-auto h-screen bg-gray-50 flex flex-col font-sans border-x border-gray-200 relative"},
-                e('header', {className: "px-6 pt-12 pb-4 bg-white shadow-sm flex justify-between items-center z-10"},
-                    e('h1', {className: "text-xl font-black text-blue-600 tracking-tighter"}, "SNAPCARD"),
-                    e('button', {onClick: () => setView("settings")}, e(Icon, {name: "settings", className: "text-gray-400"}))
-                ),
-                e('main', {className: "flex-1 overflow-y-auto p-4 relative"},
-                    error && e('div', {className: "bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-xs font-bold break-all"}, error),
-                    
-                    view === "home" && e('div', {className: "space-y-4"},
-                        !apiKey && e('div', {onClick:()=>setView("settings"), className: "bg-blue-50 p-4 rounded-xl text-blue-600 text-center text-sm font-bold cursor-pointer animate-pulse"}, "👉 請先設定 API Key"),
-                        e('div', {className: "relative"},
-                            e('div', {className: "absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"}, e(Icon, {name: "search", size: 16})),
-                            e('input', {type: "text", placeholder: "搜尋...", className: "w-full bg-white border border-gray-100 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none", value: searchQuery, onChange: ev=>setSearchQuery(ev.target.value)}),
-                            searchQuery && e('button', {onClick:()=>setSearchQuery(""), className: "absolute right-3 top-1/2 -translate-y-1/2"}, e(Icon, {name: "x", size: 14}))
-                        ),
-                        e('div', {className: "flex gap-2 overflow-x-auto pb-2 hide-scrollbar"},
-                            ["全部", "工作-客戶", "工作-廠商", "家人", "朋友"].map(c => e('button', {key: c, onClick:()=>setFilterCategory(c), className: `px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap ${filterCategory===c?"bg-blue-600 text-white":"bg-white text-gray-500 border border-gray-100"}`}, c))
-                        ),
-                        cards.filter(c => (filterCategory==="全部" || c.category===filterCategory) && (!searchQuery || (c.name?.includes(searchQuery) || c.company?.includes(searchQuery)))).map(c => 
-                            e('div', {key: c.id, onClick:()=>handleManualEdit(c), className: "bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4"},
-                                c.avatar ? e('img', {src: c.avatar, className: "w-12 h-12 rounded-full object-cover"}) : e('div', {className: "w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 font-bold"}, c.name?.[0]),
-                                e('div', {className: "flex-1 min-w-0"},
-                                    e('div', {className: "font-bold text-gray-800 truncate text-base"}, c.company),
-                                    e('div', {className: "font-bold text-gray-800 truncate text-base"}, c.name)
-                                ),
-                                e('button', {onClick: (ev)=>handleDeleteCard(c.id,ev), className: "p-2 text-gray-300 hover:text-red-500"}, e(Icon, {name: "trash-2", size: 16}))
-                            )
-                        ),
-                        e('div', {className: "h-24"})
-                    ),
-
-                    view === "settings" && e('div', {className: "space-y-6"},
-                        e('div', {className: "bg-white p-5 rounded-2xl shadow-sm border border-gray-100"},
-                            e('h3', {className: "font-bold text-lg mb-4 flex items-center gap-2"}, e(Icon, {name: "key", className: "text-blue-500"}), " API 設定"),
-                            e('div', {style:{height:0,overflow:'hidden'}}, e('input', {type:"text"}), e('input', {type:"password"})),
-                            e('div', {className: "relative mb-2"},
-                                e('label', {className: "text-xs text-gray-500 block mb-1"}, "Google API Key"),
-                                e('input', {type: "password", autoComplete: "new-password", readOnly: true, onFocus: ev=>ev.target.removeAttribute('readonly'), name: randomInputName, value: apiKey, onChange: ev=>{setApiKey(ev.target.value);}, className: "w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm pr-10 focus:outline-none focus:ring-2 focus:ring-blue-100", placeholder: "AIzaSy..."}),
-                                apiKey && e('button', {onClick: clearApiKey, className: "absolute right-3 top-8 text-gray-400 hover:text-red-500"}, e(Icon, {name: "x", size: 16}))
-                            ),
-                            e('p', {className: "text-[10px] text-gray-400 mb-4 ml-1"}, "✨ 貼上 Key 即可直接返回首頁掃描，無需點擊測試"),
-                            availableModels.length > 0 && e('div', {className: "mb-4"},
-                                e('label', {className: "text-xs text-gray-500 block mb-1"}, "鎖定模型 (推薦 gemini-2.0)"),
-                                e('select', {value: selectedModel, onChange: ev=>setSelectedModel(ev.target.value), className: "w-full bg-green-50 border border-green-200 text-green-700 rounded-lg p-3 text-sm focus:outline-none"},
-                                    dropdownModels.map(m => e('option', {key: m, value: m}, m))
-                                )
-                            ),
-                            e('div', {className: "flex gap-2"},
-                                e('button', {onClick: fetchModelsAndTest, disabled: testStatus==="testing", className: `flex-1 py-2 rounded-lg text-sm font-bold ${testStatus==="success"?"bg-green-100 text-green-700":testStatus==="error"?"bg-red-100 text-red-700":"bg-blue-100 text-blue-700"}`}, testStatus==="testing"?"偵測中...":testStatus==="success"?"偵測成功":"偵測可用模型清單"),
-                                e('button', {onClick: ()=>window.open("https://aistudio.google.com/app/apikey"), className: "flex-1 bg-gray-100 text-gray-600 py-2 rounded-lg text-sm font-bold"}, "取得 Key")
-                            ),
-                            testMessage && e('div', {className: `text-xs mt-2 p-2 rounded ${testStatus==="error"?"text-red-600 bg-red-50":"text-green-600 bg-green-50"}`}, testMessage)
-                        ),
-                        e('div', {className: "bg-white p-5 rounded-2xl shadow-sm border border-gray-100"},
-                            e('h3', {className: "font-bold text-lg mb-4 flex items-center gap-2"}, e(Icon, {name: "database", className: "text-purple-500"}), " 資料管理"),
-                            e('div', {className: "space-y-3"},
-                                e('button', {onClick: exportData, className: "w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700"}, e('span', null, "匯出 (JSON)"), e(Icon, {name: "upload", size: 18})),
-                                e('label', {className: "w-full flex justify-between p-3 bg-gray-50 rounded-xl text-gray-700 cursor-pointer"}, e('span', null, "匯入"), e(Icon, {name: "download", size: 18}), e('input', {type: "file", accept: ".json", onChange: handleImportBackup, className: "hidden"}))
-                            )
-                        ),
-                        e('div', {className: "text-center text-xs text-gray-400 mt-8"}, "AA Version 42.0 (Native Complete)"),
-                        e('button', {onClick:()=>setView("home"), className: "w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold mt-4"}, "返回")
-                    ),
-
-                    view === "scan" && e(CameraScanner, {onCapture: b=>{setCapturedImage(b);setView("home");analyze(b);}, onCancel: ()=>setView("home")}),
-
-                    view === "result" && e('div', {className: "bg-white min-h-full rounded-2xl shadow-sm border border-gray-100 flex flex-col"},
-                        e('div', {className: "bg-gray-100 relative group"},
-                            capturedImage ? e('img', {src: capturedImage, className: "w-full max-h-64 object-contain"}) : e('div', {className: "h-40 flex items-center justify-center text-gray-400"}, "無影像"),
-                            e('label', {className: "absolute bottom-2 right-2 bg-black/50 text-white p-2 rounded-full cursor-pointer"}, e(Icon, {name: "camera", size: 16}), e('input', {type: "file", accept: "image/*", className: "hidden", onChange: ev=>handleImageUpload(ev,setCapturedImage)}))
-                        ),
-                        e('div', {className: "p-5 flex-1 space-y-4"},
-                            e('div', {className: "flex gap-4"},
-                                e('div', {className: "relative w-20 h-20 shrink-0"},
-                                    currentAvatar ? e('img', {src: currentAvatar, className: "w-20 h-20 rounded-xl object-cover"}) : e('div', {className: "w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center"}, e(Icon, {name: "user", size: 32})),
-                                    e('label', {className: "absolute -bottom-2 -right-2 bg-white shadow p-1.5 rounded-full cursor-pointer"}, e(Icon, {name: "edit-2", size: 12}), e('input', {type: "file", accept: "image/*", className: "hidden", onChange: ev=>handleImageUpload(ev,setCurrentAvatar)}))
-                                ),
-                                e('div', {className: "flex-1 space-y-2"},
-                                    e('input', {type: "text", value: resultData.name||"", onChange: ev=>setResultData({...resultData,name:ev.target.value}), placeholder: "姓名", className: "w-full text-xl font-black bg-transparent border-b focus:outline-none"}),
-                                    e('input', {type: "text", value: resultData.jobTitle||"", onChange: ev=>setResultData({...resultData,jobTitle:ev.target.value}), placeholder: "職稱", className: "w-full text-sm text-gray-500 bg-transparent border-b focus:outline-none"})
-                                )
-                            ),
-                            e('div', {className: "space-y-3 pt-2"},
-                                [
-                                    {k:"company",i:"building",p:"公司"},{k:"mobile",i:"smartphone",p:"手機"},{k:"tel",i:"phone",p:"電話"},
-                                    {k:"fax",i:"printer",p:"傳真"},{k:"email",i:"mail",p:"Email"},{k:"address",i:"map-pin",p:"地址"}
-                                ].map(f => {
-                                    const val = resultData[f.k]; let href = null; let target = "";
-                                    if (val) {
-                                        if (['mobile','tel','fax'].includes(f.k)) href = "tel:" + val.replace(/[^0-9+]/g, '');
-                                        else if (f.k === 'email') href = "mailto:" + val;
-                                        else if (f.k === 'address') { href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(val); target = "_blank"; }
-                                    }
-                                    return e('div', {key: f.k, className: "flex items-center gap-3 bg-gray-50 p-3 rounded-xl relative"},
-                                        href ? e('a', {href: href, target: target, className: "text-blue-500 hover:text-blue-700 p-2 -m-2 z-10"}, e(Icon, {name: f.i, size: 18})) : e(Icon, {name: f.i, className: "text-gray-400", size: 18}),
-                                        e('input', {type: "text", value: resultData[f.k]||"", onChange: ev=>setResultData({...resultData,[f.k]:ev.target.value}), placeholder: f.p, className: "flex-1 bg-transparent text-sm focus:outline-none min-w-0"})
-                                    );
-                                }),
-                                e('div', {className: "flex gap-2 py-2"}, ["工作-客戶","工作-廠商","家人","朋友"].map(c=>e('button', {key: c, onClick:()=>setResultData({...resultData,category:c}), className: `flex-1 py-2 text-[11px] rounded-lg font-bold border ${resultData.category===c?"bg-blue-50 border-blue-200 text-blue-600":"border-gray-100"}`}, c))),
-                                e('textarea', {value: resultData.note||"", onChange: ev=>setResultData({...resultData,note:ev.target.value}), placeholder: "新增備註...", rows: "3", className: "w-full bg-gray-50 border border-transparent rounded-xl p-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-200 resize-none"}),
-                                e('div', {className: "grid grid-cols-1 gap-3"},
-                                    e('div', {className: "relative aspect-[21/9] bg-gray-50 rounded-xl flex items-center justify-center border border-dashed", onClick:()=>document.getElementById('au').click()}, additionalImage ? e('img', {src: additionalImage, className: "w-full h-full object-cover"}) : e('span', {className: "text-xs text-gray-400"}, "附件照片"), e('input', {id: "au", type: "file", className: "hidden", onChange: ev=>handleImageUpload(ev,setAdditionalImage)}))
-                                )
-                            ),
-                            e('div', {className: "flex flex-col gap-3 pt-4 pb-20"},
-                                e('button', {onClick: downloadSingleVcf, className: "w-full py-3 rounded-xl font-bold bg-green-50 text-green-600 border border-green-100 flex items-center justify-center gap-2"}, e(Icon, {name: "contact", size: 18}), "加入手機通訊錄"),
-                                e('div', {className: "flex gap-3"},
-                                    e('button', {onClick:()=>setView("home"), className: "flex-1 py-3 rounded-xl font-bold text-gray-500 bg-gray-100"}, "取消"),
-                                    e('button', {onClick: saveCard, className: "flex-1 py-3 rounded-xl font-bold text-white bg-blue-600 shadow-lg"}, "儲存")
-                                )
-                            )
-                        )
-                    ),
-                    isProcessing && e('div', {className: "fixed inset-0 bg-white/90 z-50 flex flex-col items-center justify-center"}, e('div', {className: "w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4"}), e('div', {className: "text-blue-900 font-bold animate-pulse"}, statusMsg))
-                ),
-                view === "home" && e('div', {className: "absolute bottom-6 left-0 w-full flex justify-center z-20 pointer-events-none"},
-                    e('div', {className: "flex items-center gap-8 bg-white/90 backdrop-blur-md px-8 py-3 rounded-full shadow-2xl pointer-events-auto border border-gray-100/50"},
-                        e('button', {onClick: startScanFlow, className: "relative -top-8 group flex flex-col items-center pointer-events-auto"},
-                            e('div', {className: "w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-full flex items-center justify-center shadow-[0_8px_20px_rgb(37,99,235,0.4)] border-4 border-white group-active:scale-95 transition-all"}, e(Icon, {name: "scan-line", size: 32, className: "text-white"})),
-                            e('span', {className: "text-[10px] font-bold text-blue-700 mt-1 absolute -bottom-5"}, "掃描名片")
-                        ),
-                        e('button', {onClick: handleManualAdd, className: "flex flex-col items-center gap-1.5 text-gray-400 hover:text-blue-600 group active:scale-95 transition-transform pointer-events-auto"},
-                            e('div', {className: "w-10 h-10 rounded-full bg-gradient-to-tr from-gray-50 to-gray-100 shadow-inner border border-gray-200 flex items-center justify-center group-hover:border-blue-200 group-hover:bg-blue-50"}, e(Icon, {name: "pen-tool", size: 18, className: "text-gray-500 group-hover:text-blue-600"})),
-                            e('span', {className: "text-[10px] font-bold text-gray-500 group-hover:text-blue-600"}, "手動輸入")
-                        )
-                    )
-                )
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(e(ErrorBoundary, null, e(App)));
-    </script>
+<div class="app">
+  <header class="top"><div class="brand">名脈 <small>MINGMAI</small></div><button class="icon" id="settingsBtn" aria-label="設定">⚙</button></header>
+  <main class="content">
+    <section id="homeView">
+      <div class="hero"><h1>讓每張名片，都能延續關係。</h1><p>拍攝、校正、分類，再在適當的時候重新聯絡。</p></div>
+      <div class="search"><input id="search" placeholder="搜尋姓名、公司、電話、Email、標籤或備註"><button id="clearSearch" class="clear-search hidden" aria-label="清除搜尋">×</button></div>
+      <div class="chips" id="chips"></div>
+      <div class="row between toolbar"><span id="count"></span><label>排序 <select id="sort"><option value="recent">最近更新</option><option value="contact">最近聯絡</option><option value="name">姓名</option><option value="company">公司</option></select></label></div>
+      <div id="cardList"></div>
+    </section>
+    <section id="editorView" class="sheet">
+      <div class="row between"><button id="backBtn" class="ghost">← 返回</button><button id="deleteBtn" class="danger hidden">刪除</button></div>
+      <h1 class="form-title" id="editorTitle">新增名片</h1>
+      <div class="notice info">先核對 AI 結果再儲存。電話、Email 與網址可直接點擊使用。</div>
+      <div id="duplicateBox" class="dupes hidden"></div>
+      <div class="images">
+        <div class="image-slot" id="frontSlot"><img class="hidden"><label>＋ 正面名片<br><span class="small">拍照或選擇照片</span><input type="file" accept="image/*" capture="environment"></label><button class="remove-image hidden" type="button">×</button></div>
+        <div class="image-slot" id="backSlot"><img class="hidden"><label>＋ 背面／補充資料<br><span class="small">選擇照片</span><input type="file" accept="image/*" capture="environment"></label><button class="remove-image hidden" type="button">×</button></div>
+      </div>
+      <button id="scanBtn" class="secondary wide">✨ 使用 AI 讀取正面名片</button>
+      <div class="section"><h2>基本資料</h2>
+        <div class="pair"><div class="field"><label>姓名</label><input data-field="name" placeholder="王小明"></div><div class="field"><label>職稱</label><input data-field="jobTitle" placeholder="業務經理"></div></div>
+        <div class="field"><label>公司</label><input data-field="company" placeholder="範例科技股份有限公司"></div>
+        <div class="pair"><div class="field"><label>手機</label><input data-field="mobile" inputmode="tel" placeholder="0912 345 678"></div><div class="field"><label>市話</label><input data-field="tel" inputmode="tel" placeholder="02 1234 5678"></div></div>
+        <div class="pair"><div class="field"><label>分機</label><input data-field="extension" inputmode="numeric" placeholder="123"></div><div class="field"><label>傳真</label><input data-field="fax" inputmode="tel"></div></div>
+        <div class="field"><label>Email</label><input data-field="email" type="email" placeholder="name@example.com"></div>
+        <div class="field"><label>網站</label><input data-field="website" inputmode="url" placeholder="https://example.com"></div>
+        <div class="field"><label>地址</label><input data-field="address" placeholder="台北市…"></div>
+      </div>
+      <div class="section"><h2>關係管理</h2>
+        <div class="pair"><div class="field"><label>分類</label><select data-field="category"><option>工作－客戶</option><option>工作－廠商</option><option>朋友</option><option>家人</option><option>其他</option></select></div><div class="field"><label>狀態</label><select data-field="status"><option>待跟進</option><option>進行中</option><option>已聯絡</option><option>封存</option></select></div></div>
+        <div class="field"><label>標籤（以逗號分隔）</label><input data-field="tagsText" placeholder="展覽, 2026, 潛在客戶"></div>
+        <div class="field"><label>在哪裡認識／備註</label><textarea data-field="note" placeholder="例如：7/23 展場認識；九月再聯絡…"></textarea></div>
+        <div class="row"><label class="row grow"><input data-field="favorite" type="checkbox"> 收藏這位聯絡人</label><button id="contactedBtn" class="ghost">標記今天已聯絡</button></div>
+      </div>
+      <div class="row"><button id="vcardBtn" class="secondary grow">加入通訊錄</button><button id="saveBtn" class="primary grow">儲存名片</button></div>
+    </section>
+  </main>
+  <nav class="bottom" id="bottomNav"><button id="addBtn" class="primary">＋ 新增名片</button><button id="importBtn" class="ghost">匯入備份</button><button id="exportBtn" class="ghost">匯出備份</button><input id="importFile" type="file" accept="application/json,.json" class="hidden"></nav>
+</div>
+<div class="loading" id="loading"><div><div class="spinner"></div><p id="loadingText">處理中…</p></div></div><div id="toast" class="toast"></div>
+<div class="modal" id="settingsModal"><div class="modal-box"><div class="row between"><h2>設定</h2><button class="icon close-modal">×</button></div>
+  <div class="notice">AI Key 僅保留在此頁面記憶體，重新整理後會清除。此單檔版本會從你的瀏覽器直接呼叫 Gemini，請僅使用受限且可撤銷的個人 Key；若要公開上線，請改用後端代理服務。</div>
+  <div class="field"><label>Google Gemini API Key（可選）</label><input id="apiKey" type="password" autocomplete="off" placeholder="AIza…"></div>
+  <div class="field"><label>辨識模型</label><select id="model"><option value="">先測試並載入可用模型</option></select></div>
+  <div class="row"><button id="testKeyBtn" class="secondary grow">測試 Key／取得模型</button><a class="ghost link" target="_blank" rel="noreferrer" href="https://aistudio.google.com/app/apikey">建立 Key</a></div><p id="keyStatus" class="settings-note"></p>
+  <hr style="border:0;border-top:1px solid var(--line);margin:20px 0"><h2 style="font-size:16px">資料管理</h2><p class="settings-note">資料只保存在這台裝置的瀏覽器。請定期匯出 JSON 備份。</p><button id="clearAllBtn" class="danger">清除所有本機名片</button>
+</div></div>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const dbName='MingMai', storeName='cards'; let db, cards=[], activeId=null, state={}, aiKey='', models=[];
+const categories=['全部','收藏','工作－客戶','工作－廠商','朋友','家人','其他']; let activeCategory='全部';
+const defaults=()=>({name:'',jobTitle:'',company:'',mobile:'',tel:'',extension:'',fax:'',email:'',website:'',address:'',category:'工作－客戶',status:'待跟進',tags:[],tagsText:'',note:'',favorite:false,frontImage:'',backImage:'',createdAt:Date.now(),updatedAt:Date.now(),lastContactedAt:null});
+function openDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open(dbName,2);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(storeName)){const s=d.createObjectStore(storeName,{keyPath:'id'});s.createIndex('updatedAt','updatedAt')} };r.onsuccess=e=>{db=e.target.result;resolve()};r.onerror=()=>reject(r.error)})}
+function tx(mode,fn){return new Promise((resolve,reject)=>{const t=db.transaction(storeName,mode),s=t.objectStore(storeName);const r=fn(s);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+async function load(){cards=await tx('readonly',s=>s.getAll());renderHome()}
+async function put(card){await tx('readwrite',s=>s.put(card));await load()}
+async function del(id){await tx('readwrite',s=>s.delete(id));await load()}
+function toast(message){const t=$('#toast');t.textContent=message;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2700)}
+function showLoading(text){$('#loadingText').textContent=text;$('#loading').classList.add('show')}function hideLoading(){$('#loading').classList.remove('show')}
+const safe=v=>String(v||'').toLocaleLowerCase();
+function cardMatches(c,q){const hay=[c.name,c.jobTitle,c.company,c.mobile,c.tel,c.email,c.website,c.address,c.note,...(c.tags||[])].map(safe).join(' ');return hay.includes(safe(q))}
+function renderHome(){const q=$('#search').value.trim(),sort=$('#sort').value;let list=cards.filter(c=>(activeCategory==='全部'||(activeCategory==='收藏'?c.favorite:c.category===activeCategory))&&cardMatches(c,q));list.sort((a,b)=>{if(sort==='name')return safe(a.name).localeCompare(safe(b.name),'zh-Hant');if(sort==='company')return safe(a.company).localeCompare(safe(b.company),'zh-Hant');if(sort==='contact')return (b.lastContactedAt||0)-(a.lastContactedAt||0);return (b.updatedAt||0)-(a.updatedAt||0)});$('#chips').innerHTML=categories.map(c=>`<button class="chip ${c===activeCategory?'active':''}" data-cat="${c}">${c}</button>`).join('');$$('[data-cat]').forEach(b=>b.onclick=()=>{activeCategory=b.dataset.cat;renderHome()});$('#clearSearch').classList.toggle('hidden',!q);$('#count').textContent=`${list.length} 張名片`;
+$('#cardList').innerHTML=list.length?list.map(c=>`<article class="card" data-id="${c.id}"><div class="avatar">${c.frontImage?`<img src="${c.frontImage}" class="avatar" alt="">`:escapeHtml((c.name||c.company||'?').slice(0,1))}</div><div class="card-main"><div class="card-name">${escapeHtml(c.name||'未命名')}</div><div class="card-sub">${escapeHtml([c.company,c.jobTitle].filter(Boolean).join(' · ')||'尚未填寫公司')}</div></div><button class="star" data-star="${c.id}" aria-label="收藏">${c.favorite?'★':'☆'}</button></article>`).join(''):`<div class="empty"><div class="big">▧</div><h3>${q?'找不到符合的名片':'還沒有名片'}</h3><p>${q?'試試姓名、電話、Email 或標籤':'從拍攝一張名片開始。'}</p></div>`;$$('.card[data-id]').forEach(el=>el.onclick=e=>{if(!e.target.closest('[data-star]'))edit(el.dataset.id)});$$('[data-star]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const c=cards.find(x=>x.id===b.dataset.star);await put({...c,favorite:!c.favorite,updatedAt:Date.now()})})}
+function escapeHtml(x){return String(x||'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
+function showEditor(){activeId=null;state=defaults();fillEditor();$('#editorTitle').textContent='新增名片';$('#deleteBtn').classList.add('hidden');$('#homeView').classList.remove('show');$('#homeView').classList.add('hidden');$('#editorView').classList.add('show');$('#bottomNav').classList.add('hidden')}
+function edit(id){activeId=id;const selected=cards.find(c=>String(c.id)===String(id));state={...defaults(),...selected,tagsText:(selected.tags||[]).join(', ')};fillEditor();$('#editorTitle').textContent='編輯名片';$('#deleteBtn').classList.remove('hidden');$('#homeView').classList.add('hidden');$('#editorView').classList.add('show');$('#bottomNav').classList.add('hidden')}
+function fillEditor(){ $$('[data-field]').forEach(i=>{if(i.type==='checkbox')i.checked=!!state[i.dataset.field];else i.value=state[i.dataset.field]||''});renderImage('front');renderImage('back');findDuplicates() }
+function home(){activeId=null;$('#editorView').classList.remove('show');$('#homeView').classList.remove('hidden');$('#bottomNav').classList.remove('hidden');renderHome()}
+function renderImage(which){const key=which+'Image',slot=$('#'+which+'Slot'),img=slot.querySelector('img'),rm=slot.querySelector('.remove-image');if(state[key]){img.src=state[key];img.classList.remove('hidden');slot.classList.add('has');rm.classList.remove('hidden')}else{img.src='';img.classList.add('hidden');slot.classList.remove('has');rm.classList.add('hidden')}}
+async function resize(file){return new Promise((resolve,reject)=>{if(!file)return resolve('');const im=new Image(),url=URL.createObjectURL(file);im.onload=()=>{URL.revokeObjectURL(url);const max=1440;let{width:w,height:h}=im;if(Math.max(w,h)>max){const r=max/Math.max(w,h);w=Math.round(w*r);h=Math.round(h*r)}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);resolve(c.toDataURL('image/jpeg',.76))};im.onerror=reject;im.src=url})}
+async function imageChange(which,file){try{showLoading('正在最佳化圖片…');state[which+'Image']=await resize(file);renderImage(which);findDuplicates()}catch{toast('圖片處理失敗，請換一張再試')}finally{hideLoading()}}
+function readForm(){ $$('[data-field]').forEach(i=>state[i.dataset.field]=i.type==='checkbox'?i.checked:i.value.trim());state.tags=state.tagsText.split(',').map(x=>x.trim()).filter(Boolean);state.updatedAt=Date.now() }
+function normalizePhone(x){return String(x||'').replace(/\D/g,'')}function findDuplicates(){readForm();const phones=[normalizePhone(state.mobile),normalizePhone(state.tel)].filter(x=>x.length>5),email=safe(state.email);const dupes=cards.filter(c=>c.id!==activeId&&((email&&safe(c.email)===email)||phones.some(p=>p&&(normalizePhone(c.mobile)===p||normalizePhone(c.tel)===p))));const box=$('#duplicateBox');box.classList.toggle('hidden',!dupes.length);box.innerHTML=dupes.length?`可能重複：${dupes.map(c=>`<button data-open="${c.id}">${escapeHtml(c.name||c.company||'未命名')}</button>`).join('、')}<br><span class="small">請先確認，避免重複儲存。</span>`:'';$$('[data-open]').forEach(b=>b.onclick=()=>edit(b.dataset.open))}
+function valid(){if(!state.name&&!state.company){toast('請至少填寫姓名或公司');return false}if(state.email&&!/^\S+@\S+\.\S+$/.test(state.email)){toast('Email 格式看起來不正確');return false}return true}
+async function save(){readForm();if(!valid())return;const approx=JSON.stringify(state).length;if(approx>8*1024*1024){toast('這張名片圖片過大，請使用較小的照片');return}await put({...state,id:activeId||crypto.randomUUID()});toast('已儲存');home()}
+function escapeV(v){return String(v||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,')}
+function downloadVcard(){readForm();if(!valid())return;const name=state.name||state.company,parts=name.trim().split(/\s+/),family=parts.length>1?parts.pop():'',given=parts.join(' ')||name;let v=['BEGIN:VCARD','VERSION:3.0',`FN:${escapeV(name)}`,`N:${escapeV(family)};${escapeV(given)};;;`];if(state.company)v.push(`ORG:${escapeV(state.company)}`);if(state.jobTitle)v.push(`TITLE:${escapeV(state.jobTitle)}`);if(state.mobile)v.push(`TEL;TYPE=CELL:${escapeV(state.mobile)}`);if(state.tel)v.push(`TEL;TYPE=WORK:${escapeV(state.tel)}${state.extension?';'+escapeV(state.extension):''}`);if(state.fax)v.push(`TEL;TYPE=FAX:${escapeV(state.fax)}`);if(state.email)v.push(`EMAIL;TYPE=INTERNET:${escapeV(state.email)}`);if(state.website)v.push(`URL:${escapeV(state.website)}`);if(state.address)v.push(`ADR;TYPE=WORK:;;${escapeV(state.address)};;;;`);const note=[state.category,state.status,state.tags?.join('、'),state.note].filter(Boolean).join('｜');if(note)v.push(`NOTE:${escapeV(note)}`);v.push('END:VCARD');download(new Blob([v.join('\r\n')],{type:'text/vcard;charset=utf-8'}),`${name}.vcf`);toast('已下載聯絡人檔案')}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},300)}
+function exportData(){const clean=cards.map(({id,...c})=>({id,...c}));download(new Blob([JSON.stringify({app:'名脈 MingMai',version:2,exportedAt:new Date().toISOString(),cards:clean},null,2)],{type:'application/json'}),'mingmai-backup.json');toast('已匯出備份')}
+async function importData(file){try{const raw=JSON.parse(await file.text()),incoming=Array.isArray(raw)?raw:raw.cards;if(!Array.isArray(incoming))throw Error();const existing=new Map(cards.map(c=>[c.id,c]));let add=0,replace=0;incoming.forEach(x=>{if(x&&typeof x==='object'){existing.has(x.id)?replace++:add++}});if(!confirm(`將匯入 ${add} 張新名片、更新 ${replace} 張同 ID 名片。要繼續嗎？`))return;showLoading('正在匯入備份…');for(const x of incoming)if(x&&typeof x==='object')await put({...defaults(),...x,id:x.id||crypto.randomUUID(),updatedAt:x.updatedAt||Date.now()});toast(`已匯入 ${add+replace} 張名片`)}catch{toast('無法讀取此備份檔')}finally{hideLoading()}}
+async function getModels(){const key=aiKey.trim();if(!key)throw Error('請先輸入 API Key');const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);if(!r.ok){const x=await r.json().catch(()=>({}));throw Error(x.error?.message||`驗證失敗 (${r.status})`)}const j=await r.json();return j.models.filter(m=>m.supportedGenerationMethods?.includes('generateContent')).map(m=>m.name.replace('models/',''))}
+async function testKey(){try{showLoading('正在確認 API Key…');models=await getModels();const sel=$('#model');sel.innerHTML=models.map(m=>`<option>${escapeHtml(m)}</option>`).join('');$('#keyStatus').textContent=`已載入 ${models.length} 個可用模型。`;toast('API Key 可使用')}catch(e){$('#keyStatus').textContent=e.message;toast('無法驗證 API Key')}finally{hideLoading()}}
+function parseJson(text){const cleaned=text.replace(/```json|```/gi,'').trim();const a=cleaned.indexOf('{'),b=cleaned.lastIndexOf('}');return JSON.parse(cleaned.slice(a,b+1))}
+async function scan(){if(!state.frontImage){toast('請先拍攝或選擇名片正面');return}if(!aiKey.trim()){openSettings();toast('請先在設定輸入 Gemini API Key');return}try{showLoading('AI 正在辨識名片…');if(!models.length)models=await getModels();let model=$('#model').value||models.find(x=>/flash/i.test(x))||models[0];const prompt='請從名片圖片擷取資料，僅回傳 JSON，不要 Markdown。欄位：name, jobTitle, company, mobile, tel, extension, fax, email, website, address, note。無法確定請留空字串。使用繁體中文保留原文。';const body={contents:[{parts:[{text:prompt},{inlineData:{mimeType:'image/jpeg',data:state.frontImage.split(',')[1]}}]}],generationConfig:{temperature:0.1,responseMimeType:'application/json'}};let r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(aiKey.trim())}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok){const x=await r.json().catch(()=>({}));throw Error(x.error?.message||`辨識失敗 (${r.status})`)}const result=parseJson((await r.json()).candidates?.[0]?.content?.parts?.[0]?.text||'');for(const k of ['name','jobTitle','company','mobile','tel','extension','fax','email','website','address','note'])if(result[k]&&(!state[k]||confirm(`以 AI 辨識到的「${result[k]}」更新${k}？`)))state[k]=String(result[k]).trim();fillEditor();toast('辨識完成，請逐欄確認後儲存')}catch(e){toast(e.message||'辨識失敗')}finally{hideLoading()}}
+function openSettings(){$('#settingsModal').classList.add('show');$('#apiKey').value=aiKey}function closeSettings(){$('#settingsModal').classList.remove('show');aiKey=$('#apiKey').value.trim()}
+$('#addBtn').onclick=showEditor;$('#backBtn').onclick=home;$('#saveBtn').onclick=save;$('#vcardBtn').onclick=downloadVcard;$('#deleteBtn').onclick=async()=>{if(confirm('確定刪除這張名片？')){await del(activeId);toast('已刪除');home()}};$('#contactedBtn').onclick=()=>{state.lastContactedAt=Date.now();state.status='已聯絡';fillEditor();toast('已標記今天聯絡')};$('#scanBtn').onclick=scan;$('#settingsBtn').onclick=openSettings;$$('.close-modal').forEach(b=>b.onclick=closeSettings);$('#testKeyBtn').onclick=()=>{aiKey=$('#apiKey').value.trim();testKey()};$('#clearAllBtn').onclick=async()=>{if(confirm('這會永久刪除這台裝置上的所有名片。你已經匯出備份了嗎？')){await tx('readwrite',s=>s.clear());await load();closeSettings();toast('本機名片已清除')}};
+$('#search').oninput=renderHome;$('#search').oninput=()=>{renderHome()};$('#clearSearch').onclick=()=>{$('#search').value='';renderHome()};$('#sort').onchange=renderHome;$('#exportBtn').onclick=exportData;$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{if(e.target.files[0])importData(e.target.files[0]);e.target.value=''};['front','back'].forEach(which=>{const slot=$('#'+which+'Slot');slot.querySelector('input').onchange=e=>{if(e.target.files[0])imageChange(which,e.target.files[0]);e.target.value=''};slot.querySelector('.remove-image').onclick=()=>{state[which+'Image']='';renderImage(which)}});$$('[data-field]').forEach(i=>i.oninput=()=>{readForm();findDuplicates()});
+openDB().then(load).catch(()=>toast('無法開啟本機資料庫，請使用較新的瀏覽器'));
+})();
+</script>
 </body>
 </html>
